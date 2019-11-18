@@ -1,0 +1,22 @@
+{
+  "name": "practices-bot",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "local": "nodemon -r dotenv/config app.js"
+  },
+  "author": "James McManamey",
+  "license": "ISC",
+  "dependencies": {
+    "@slack/bolt": "^1.4.1",
+    "airtable": "^0.7.2",
+    "dotenv": "^8.2.0",
+    "moment": "^2.24.0",
+    "moment-timezone": "^0.5.27"
+  },
+  "devDependencies": {
+    "nodemon": "^1.19.4"
+  }
+}
