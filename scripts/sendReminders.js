@@ -1,7 +1,7 @@
 const { AIRTABLE_API_KEY } = require("../config");
 const base = require("airtable").base("appQHyg8VRIOEuor7");
 const timezone = "Australia/Sydney";
-const { sendDM } = require ('../sendDM')
+const { sendSlackDM } = require("../sendSlackDM");
 
 //Set up the dates that we need to find the practices due today
 const moment = require("moment-timezone");
@@ -9,8 +9,6 @@ const date = moment().tz(timezone);
 const week = () => {
   return date.week() % 2 ? 2 : 1;
 };
-
-
 
 const dateFormattedForAirtable = date.format("YYYY-MM-DD");
 
@@ -40,11 +38,11 @@ function getListOfUniqueTeamLeads(list) {
     .filter((person, index, all) => all.indexOf(person) === index);
 }
 
-const sendReminders = async (app, date) => {
+const sendReminders = async () => {
   try {
-    console.log(`Sending practice reminders for: ${date}`);
+    console.log(`Sending practice reminders for: ${dateFormattedForAirtable}`);
     const practices = base("Practices Log");
-    const lookupFormula = `AND(IS_SAME(Date,"${date}", 'day' ), Status = 'Pending',Team_Lead_Email!="" )`;
+    const lookupFormula = `AND(IS_SAME(Date,"${dateFormattedForAirtable}", 'day' ), Status = 'Pending',Team_Lead_Email!="" )`;
 
     //get a list of the practices due today, group them by team lead email and shape data
 
@@ -80,8 +78,36 @@ const sendReminders = async (app, date) => {
 
     //Create and send the Slack messages
 
-    const sendMessages = await formattedTodaysPractices.forEach(element => {
-        console.log(`Sending ${element.practices.length} practices to ${element.email}`)
+    const sendMessages =  await formattedTodaysPractices.forEach(x => {
+      console.log(`Sending ${x.practices.length} practices to ${x.email}`);
+
+      const text = `You have ${x.practices.length} practices to review`;
+      const blocks = [
+        {
+          type: "section",
+          text: {
+            type: "mrkdwn",
+            text: text
+          }
+        },
+        {
+          type: "actions",
+          elements: [
+            {
+              type: "button",
+
+              text: {
+                type: "plain_text",
+                text: "Update Practices"
+              },
+              url: String(x.practices[0].viewURL),
+              action_id: "view_practices"
+            }
+          ]
+        }
+      ];
+
+     sendSlackDM(x.email, text, blocks);
     });
 
     return formattedTodaysPractices;
