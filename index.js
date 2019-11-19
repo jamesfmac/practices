@@ -1,9 +1,8 @@
 const { PORT } = require("./config");
-const { app } = require("./app");
+const { app, receiver } = require("./app");
 const { updatePracticesLog } = require("./airtable/practicesLog");
 
 const { sendReminders } = require("./scripts/sendReminders");
-const { sendSlackDM } = require("./sendSlackDM");
 
 // Listener middleware that filters out messages with 'bot_message' subtype
 function noBotMessages({ message, next }) {
@@ -24,48 +23,51 @@ app.message("remind-all", async ({ message, context }) => {
 
 //listenrs for responding to practice updates
 
-app.action("completed_practice", async ({ body, ack, context, action,  payload }) => {
-  ack();
+app.action(
+  "completed_practice",
+  async ({ body, ack, context, action, payload }) => {
+    ack();
 
-  try {
-    const updatePracticeLog = await updatePracticesLog({
-      id: payload.value,
-      fields: {
-        Status: "Completed"
-      }
-    });
+    try {
+      const updatePracticeLog = await updatePracticesLog({
+        id: payload.value,
+        fields: {
+          Status: "Completed"
+        }
+      });
 
-    const originalBlocks = body.message.blocks;
-    const actionBlockID = action.block_id;
+      const originalBlocks = body.message.blocks;
+      const actionBlockID = action.block_id;
 
-    const updatedBlocks = updatePracticeLog
-      ? originalBlocks.map(block =>
-          block.block_id === actionBlockID
-            ? {
-                type: "context",
-                elements: [
-                  {
-                    type: "mrkdwn",
-                    text: ":white_check_mark: *Practice Completed*"
-                  }
-                ]
-              }
-            : block
-        )
-      : originalBlocks;
+      const updatedBlocks = updatePracticeLog
+        ? originalBlocks.map(block =>
+            block.block_id === actionBlockID
+              ? {
+                  type: "context",
+                  elements: [
+                    {
+                      type: "mrkdwn",
+                      text: ":white_check_mark: *Practice Completed*"
+                    }
+                  ]
+                }
+              : block
+          )
+        : originalBlocks;
 
-    const result = await app.client.chat.update({
-      token: context.botToken,
-      ts: body.message.ts,
-      channel: body.channel.id,
-      text: body.message.text,
-      as_user: true,
-      blocks: updatedBlocks
-    });
-  } catch (error) {
-    console.log(error);
+      const result = await app.client.chat.update({
+        token: context.botToken,
+        ts: body.message.ts,
+        channel: body.channel.id,
+        text: body.message.text,
+        as_user: true,
+        blocks: updatedBlocks
+      });
+    } catch (error) {
+      console.log(error);
+    }
   }
-});
+);
 
 app.action(
   "missed_practice",
@@ -112,6 +114,21 @@ app.action(
     }
   }
 );
+
+// The echo command simply echoes on command
+app.command("/ping", async ({ command, ack, say }) => {
+  // Acknowledge command request
+  ack();
+  say(`Status Ok`);
+});
+
+// health check for ALB
+
+receiver.app.get("/", (req, res, next) => {
+  res.json({ status: "Ok" });
+  res.status(200).send(); // respond 200 OK to the default health check method
+  
+});
 
 (async () => {
   // Start your app
