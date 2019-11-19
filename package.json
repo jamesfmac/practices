@@ -5,7 +5,8 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "local": "nodemon -r dotenv/config index.js"
+    "local": "nodemon -r dotenv/config index.js",
+    "start": "node index.js"
   },
   "author": "James McManamey",
   "license": "ISC",

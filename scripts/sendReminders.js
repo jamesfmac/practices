@@ -12,7 +12,7 @@ const week = () => {
 
 const dateFormattedForAirtable = date.format("YYYY-MM-DD");
 
-function groupPracticesByTeamLeadEmail(list, email) {
+const groupPracticesByTeamLeadEmail = (list, email) => {
   return (
     list
       //  filter out items not matching the email address
@@ -23,25 +23,108 @@ function groupPracticesByTeamLeadEmail(list, email) {
           id: record.id,
           email: record.fields.TEAM_LEAD_EMAIL[0],
           practice: record.fields.PRACTICE_NAME[0],
-          project: record.fields.Project[0],
-          date: record.fields.Date,
-          status: record.fields.Status,
-          viewURL: record.fields.TEAM_LEAD_PRACTICES_URL[0]
+          project: record.fields.PROJECT_NAME[0],
+          date: moment(record.fields.Date).format("dddd, Do MMM"),
+          status: record.fields.Status
         };
       })
   );
-}
+};
 
-function getListOfUniqueTeamLeads(list) {
+const getListOfUniqueTeamLeads = list => {
   return list
     .map(item => item.fields.TEAM_LEAD_EMAIL[0])
     .filter((person, index, all) => all.indexOf(person) === index);
-}
+};
+
+const createAndDispatchSlackDMs = async groupedPractices => {
+  for (const group of groupedPractices) {
+    console.log(
+      `Sending ${group.practices.length} practices to ${group.email}`
+    );
+    const text =
+      group.practices.length > 1
+        ? `${group.practices.length} new practices to update:`
+        : `${group.practices.length} new practice to update:`;
+
+    const intro = [
+      {
+        type: "section",
+        text: {
+          type: "mrkdwn",
+          text: text
+        }
+      }
+    ];
+
+    const practiceCards = group.practices.map(practice => {
+      return [
+        {
+          type: "section",
+          text: {
+            type: "mrkdwn",
+            text: `${practice.practice}`
+          }
+        },
+
+        {
+          type: "section",
+          fields: [
+            {
+              type: "mrkdwn",
+              text: `Project:\n${practice.project}`
+            },
+            {
+              type: "mrkdwn",
+              text: `Date:\n${practice.date}`
+            }
+          ]
+        },
+        {
+          type: "actions",
+          elements: [
+            {
+              type: "button",
+              text: {
+                type: "plain_text",
+                text: "Missed",
+                emoji: true
+              },
+              value: `${practice.id}`,
+              action_id: "missed_practice"
+            },
+            {
+              type: "button",
+              text: {
+                type: "plain_text",
+                text: "Completed",
+                emoji: true
+              },
+              style: "primary",
+              value: `${practice.id}`,
+              action_id: "completed_practice"
+            }
+          ]
+        },
+        {
+          type: "divider"
+        }
+      ];
+    });
+
+    const blocks = [...intro].concat(...practiceCards);
+
+    console.log(blocks);
+
+    await sendSlackDM(group.email, text, blocks);
+  }
+};
 
 const sendReminders = async () => {
   try {
     console.log(`Sending practice reminders for: ${dateFormattedForAirtable}`);
     const practices = base("Practices Log");
+
     const lookupFormula = `AND(IS_SAME(Date,"${dateFormattedForAirtable}", 'day' ), Status = 'Pending',Team_Lead_Email!="" )`;
 
     //get a list of the practices due today, group them by team lead email and shape data
@@ -74,41 +157,10 @@ const sendReminders = async () => {
         };
       }
     );
-    console.log(formattedTodaysPractices);
 
     //Create and send the Slack messages
 
-    const sendMessages =  await formattedTodaysPractices.forEach(x => {
-      console.log(`Sending ${x.practices.length} practices to ${x.email}`);
-
-      const text = `You have ${x.practices.length} practices to review`;
-      const blocks = [
-        {
-          type: "section",
-          text: {
-            type: "mrkdwn",
-            text: text
-          }
-        },
-        {
-          type: "actions",
-          elements: [
-            {
-              type: "button",
-
-              text: {
-                type: "plain_text",
-                text: "Update Practices"
-              },
-              url: String(x.practices[0].viewURL),
-              action_id: "view_practices"
-            }
-          ]
-        }
-      ];
-
-     sendSlackDM(x.email, text, blocks);
-    });
+    const sendMessages = createAndDispatchSlackDMs(formattedTodaysPractices);
 
     return formattedTodaysPractices;
   } catch (error) {

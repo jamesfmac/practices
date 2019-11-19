@@ -1,14 +1,9 @@
 const { PORT } = require("./config");
 const { app } = require("./app");
+const { updatePracticesLog } = require("./airtable/practicesLog");
 
 const { sendReminders } = require("./scripts/sendReminders");
 const { sendSlackDM } = require("./sendSlackDM");
-
-
-const tempdata = async () => {
-  data = await sendReminders(app, "2019-11-14");
-};
-//tempdata();
 
 // Listener middleware that filters out messages with 'bot_message' subtype
 function noBotMessages({ message, next }) {
@@ -17,151 +12,106 @@ function noBotMessages({ message, next }) {
   }
 }
 
-// Listens to incoming messages that contain "hello"
-app.message("hello", ({ message, say }) => {
-  // say() sends a message to the channel where the event was triggered
-  say({
-    blocks: [
-      {
-        type: "section",
-        text: {
-          type: "mrkdwn",
-          text: `Hey there <@${message.user}>!`
-        },
-        accessory: {
-          type: "button",
-          text: {
-            type: "plain_text",
-            text: "Click Me"
-          },
-          action_id: "button_click"
-        }
-      }
-    ]
-  });
+//send reminders to all team leads
+app.message("remind-all", async ({ message, context }) => {
+  try {
+    // Call the chat.scheduleMessage method with a token
+    sendReminders();
+  } catch (error) {
+    console.error(error);
+  }
 });
 
-app.action("button_click", ({ body, ack, say }) => {
-  ack();
-  say(`<@${body.user.id}> clicked the button`);
-});
+//listenrs for responding to practice updates
 
-// Listen for a slash command invocation
-app.command("/ticket", ({ ack, payload, context }) => {
-  // Acknowledge the command request
+app.action("completed_practice", async ({ body, ack, context, action,  payload }) => {
   ack();
 
   try {
-    const result = app.client.views.open({
-      token: context.botToken,
-      // Pass a valid trigger_id within 3 seconds of receiving it
-      trigger_id: payload.trigger_id,
-      // View payload
-      view: {
-        type: "modal",
-        // View identifier
-        callback_id: "view_1",
-        title: {
-          type: "plain_text",
-          text: "Modal title"
-        },
-        blocks: [
-          {
-            type: "section",
-            text: {
-              type: "mrkdwn",
-              text: "Welcome to a modal with _blocks_"
-            },
-            accessory: {
-              type: "button",
-              text: {
-                type: "plain_text",
-                text: "Click me!"
-              },
-              action_id: "button_abc"
-            }
-          },
-          {
-            type: "input",
-            block_id: "input_c",
-            label: {
-              type: "plain_text",
-              text: "What are your hopes and dreams?"
-            },
-            element: {
-              type: "plain_text_input",
-              action_id: "dreamy_input",
-              multiline: true
-            }
-          }
-        ],
-        submit: {
-          type: "plain_text",
-          text: "Submit"
-        }
+    const updatePracticeLog = await updatePracticesLog({
+      id: payload.value,
+      fields: {
+        Status: "Completed"
       }
     });
-    console.log(result);
+
+    const originalBlocks = body.message.blocks;
+    const actionBlockID = action.block_id;
+
+    const updatedBlocks = updatePracticeLog
+      ? originalBlocks.map(block =>
+          block.block_id === actionBlockID
+            ? {
+                type: "context",
+                elements: [
+                  {
+                    type: "mrkdwn",
+                    text: ":white_check_mark: *Practice Completed*"
+                  }
+                ]
+              }
+            : block
+        )
+      : originalBlocks;
+
+    const result = await app.client.chat.update({
+      token: context.botToken,
+      ts: body.message.ts,
+      channel: body.channel.id,
+      text: body.message.text,
+      as_user: true,
+      blocks: updatedBlocks
+    });
   } catch (error) {
-    console.error(error);
+    console.log(error);
   }
 });
 
-app.message("ping", async ({ message, context }) => {
-  try {
-    // Call the chat.scheduleMessage method with a token
-    const blocks = [
-      {
-        type: "section",
-        text: {
-          type: "mrkdwn",
-          text: `Yee haaa!.`
+app.action(
+  "missed_practice",
+  async ({ body, ack, say, context, action, payload }) => {
+    ack();
+
+    try {
+      const updatePracticeLog = await updatePracticesLog({
+        id: payload.value,
+        fields: {
+          Status: "Missed"
         }
-      },
-      {
-        type: "actions",
-        elements: [
-          {
-            type: "button",
+      });
 
-            text: {
-              type: "plain_text",
-              text: "Update Practices"
-            },
-            url:
-              "https://airtable.com/tblU7zcWqsp1zZOJU/viw2PpDAliaSVYFu7?blocks=hide",
-            action_id: "view_practices"
-          }
-        ]
-      }
-    ];
+      const originalBlocks = body.message.blocks;
+      const actionBlockID = action.block_id;
 
-    const result = await sendSlackDM(
-      "jamesm@stratejos.ai",
-      "something cool",
-      blocks
-    );
+      const updatedBlocks = updatePracticeLog
+        ? originalBlocks.map(block =>
+            block.block_id === actionBlockID
+              ? {
+                  type: "context",
+                  elements: [
+                    {
+                      type: "mrkdwn",
+                      text: ":octagonal_sign: *Practice Skipped*"
+                    }
+                  ]
+                }
+              : block
+          )
+        : originalBlocks;
 
-  
-  } catch (error) {
-    console.error(error);
+      const result = await app.client.chat.update({
+        token: context.botToken,
+        ts: body.message.ts,
+        channel: body.channel.id,
+        text: body.message.text,
+        as_user: true,
+        blocks: updatedBlocks
+      });
+    } catch (error) {
+      console.log(error);
+    }
   }
-});
-
-
-app.message("remind", async ({ message, context }) => {
-  try {
-    // Call the chat.scheduleMessage method with a token
-   sendReminders()
-  
-  } catch (error) {
-    console.error(error);
-  }
-});
-
-app.action("view_practices", ({ body, ack, say }) => {
-  ack();
-});
+);
 
 (async () => {
   // Start your app
@@ -169,4 +119,3 @@ app.action("view_practices", ({ body, ack, say }) => {
 
   console.log("⚡️ Bolt app is running!");
 })();
-
