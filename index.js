@@ -3,10 +3,9 @@ const { app, receiver } = require("./app");
 const { updatePracticesLog } = require("./airtable/practicesLog");
 
 const { sendReminders } = require("./scripts/sendReminders");
+const {generatePractices} = require ("./scripts/generatePractices")
 
-const {scheduleReminders, } = require('./scripts/schedule')
-
-
+const { scheduleReminders, schedulePracticeGeneration } = require("./scripts/schedule");
 
 // Listener middleware that filters out messages with 'bot_message' subtype
 function noBotMessages({ message, next }) {
@@ -119,11 +118,28 @@ app.action(
   }
 );
 
-// The echo command simply echoes on command
-app.command("/ping", async ({ command, ack, say }) => {
+app.command("/practicely", async ({ command, ack, payload, say }) => {
   // Acknowledge command request
+  console.log(payload.text);
   ack();
-  say(`Status Ok`);
+
+  const input = payload.text;
+
+  switch (input) {
+    case "ping":
+      say("Status OK");
+      break;
+    case "remind":
+      sendReminders();
+      say("Reminders away");
+      break;
+    case "create":
+      generatePractices();
+      say("Creating practies");
+      break;
+    default:
+      say("I don't know that one");
+  }
 });
 
 // health check for ALB
@@ -131,10 +147,7 @@ app.command("/ping", async ({ command, ack, say }) => {
 receiver.app.get("/", (req, res, next) => {
   res.json({ status: "Ok" });
   res.status(200).send(); // respond 200 OK to the default health check method
-  
 });
-
-
 
 (async () => {
   // Start your app

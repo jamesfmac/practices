@@ -12,7 +12,7 @@ module.exports = {
   app: new App({
     token: SLACK_BOT_TOKEN,
     signingSecret: SLACK_SIGNING_SECRET,
-    logLevel: LogLevel.DEBUG,
+    logLevel: LogLevel.INFO,
     receiver: receiver
   })
 };
