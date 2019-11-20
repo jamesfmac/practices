@@ -4,6 +4,10 @@ const { updatePracticesLog } = require("./airtable/practicesLog");
 
 const { sendReminders } = require("./scripts/sendReminders");
 
+const {scheduleReminders, } = require('./scripts/schedule')
+
+
+
 // Listener middleware that filters out messages with 'bot_message' subtype
 function noBotMessages({ message, next }) {
   if (!message.subtype || message.subtype !== "bot_message") {
