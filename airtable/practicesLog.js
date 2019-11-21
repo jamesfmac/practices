@@ -1,5 +1,5 @@
-const { AIRTABLE_API_KEY } = require("../config");
-const base = require("airtable").base("appQHyg8VRIOEuor7");
+const { AIRTABLE_BASE_ID } = require("../config");
+const base = require("airtable").base(AIRTABLE_BASE_ID);
 
 // helper function to chunk an array
 const chunk = (array, size) => {

@@ -1,5 +1,5 @@
-const { AIRTABLE_API_KEY } = require("../config");
-const base = require("airtable").base("appQHyg8VRIOEuor7");
+const { AIRTABLE_BASE_ID } = require("../config");
+const base = require("airtable").base(AIRTABLE_BASE_ID);
 const timezone = "Australia/Sydney";
 const { sendSlackDM } = require("../sendSlackDM");
 

@@ -1,11 +1,11 @@
-const { TIMEZONE } = require("../config");
+const { TIMEZONE, AIRTABLE_BASE_ID } = require("../config");
 
 const {
   insertPractices,
   getPracticesByDate
 } = require("../airtable/practicesLog");
 
-const base = require("airtable").base("appQHyg8VRIOEuor7");
+const base = require("airtable").base(AIRTABLE_BASE_ID);
 
 //Set up the dates that we need to find the practices due today
 const moment = require("moment-timezone");
