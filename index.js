@@ -27,7 +27,7 @@ app.message("remind-all", async ({ message, context }) => {
   }
 });
 
-//listenrs for responding to practice updates
+//listeners for responding to practice updates
 
 app.action(
   "completed_practice",
@@ -41,7 +41,7 @@ app.action(
           Status: "Completed"
         }
       });
-
+ 
       const originalBlocks = body.message.blocks;
       const actionBlockID = action.block_id;
 

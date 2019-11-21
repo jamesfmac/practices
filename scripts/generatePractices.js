@@ -50,7 +50,7 @@ const checkForProjectEndDates = async expectedPractices => {
   return results;
 };
 
-let practicesToApply = [];
+
 
 const generatePractices = async () => {
   try {
@@ -59,7 +59,7 @@ const generatePractices = async () => {
       dateFormattedForAirtable
     );
     const lookupFormula = `OR({${dayOfWeek} - W${week()}}=1, {Schedule Name}="Monthly - ${dayOfMonth}")`;
-
+    let practicesToApply = [];
     const expectedPractices = await base("Schedules")
       .select({
         view: "All Schedules",
@@ -84,7 +84,7 @@ const generatePractices = async () => {
     );
 
     //compare existing to expected and create the missing ones
-
+    console.log(expectedPractices);
     console.log(
       `${activeExpectedPractice.length} practices scheduled for today`
     );

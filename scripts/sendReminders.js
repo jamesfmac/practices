@@ -112,9 +112,8 @@ const createAndDispatchSlackDMs = async groupedPractices => {
       ];
     });
 
+  
     const blocks = [...intro].concat(...practiceCards);
-
-    console.log(blocks);
 
     await sendSlackDM(group.email, text, blocks);
   }
