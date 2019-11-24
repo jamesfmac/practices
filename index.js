@@ -4,6 +4,8 @@ const { updatePracticesLog } = require("./airtable/practicesLog");
 
 const { sendReminders } = require("./scripts/sendReminders");
 const { generatePractices } = require("./scripts/generatePractices");
+const { feedbackView } = require("./slack-layouts/views/feedback");
+const { insertFeedback } = require("./airtable/userFeedback");
 
 const {
   scheduleReminders,
@@ -41,7 +43,7 @@ app.action(
           Status: "Completed"
         }
       });
- 
+
       const originalBlocks = body.message.blocks;
       const actionBlockID = action.block_id;
 
@@ -121,6 +123,26 @@ app.action(
   }
 );
 
+app.action(
+  "open_feedback_form",
+  async ({ message, context, say, payload, ack, event }) => {
+    ack();
+    console.log("show view");
+    try {
+      const result = app.client.views.open({
+        token: context.botToken,
+        // Pass a valid trigger_id within 3 seconds of receiving it
+        trigger_id: payload.trigger_id,
+        // View payload
+        view: feedbackView(payload)
+      });
+      console.log(result);
+    } catch (error) {
+      console.error(error);
+    }
+  }
+);
+
 app.command("/practicely", async ({ command, ack, payload, say }) => {
   // Acknowledge command request
   console.log(payload.text);
@@ -138,7 +160,7 @@ app.command("/practicely", async ({ command, ack, payload, say }) => {
       break;
     case "create":
       generatePractices();
-      say("Creating practies");
+      say("Creating practices");
       break;
     default:
       say("I don't know that one");
@@ -149,75 +171,14 @@ app.command("/practicely", async ({ command, ack, payload, say }) => {
 
 app.command("/note", async ({ message, context, say, payload, ack, event }) => {
   ack();
-
+  console.log("show view");
   try {
     const result = app.client.views.open({
       token: context.botToken,
       // Pass a valid trigger_id within 3 seconds of receiving it
       trigger_id: payload.trigger_id,
       // View payload
-      view: {
-        type: "modal",
-        title: {
-          type: "plain_text",
-          text: "Feedback on Practicely",
-          emoji: true
-        },
-        callback_id: "feedback",
-        submit: {
-          type: "plain_text",
-          text: "Submit",
-          emoji: true
-        },
-        close: {
-          type: "plain_text",
-          text: "Cancel",
-          emoji: true
-        },
-        blocks: [
-          {
-            type: "section",
-            text: {
-              type: "plain_text",
-              text: `:wave: Hey  <@${payload.user_name}>!\n\nWe'd love to hear about your experience with practicely and what would make it better for you.`,
-              emoji: true
-            }
-          },
-          {
-            type: "divider"
-          },
-
-          {
-            type: "input",
-            block_id: "feedback_improvment",
-            label: {
-              type: "plain_text",
-              text: "How can practicely be improved?",
-              emoji: true
-            },
-            element: {
-              type: "plain_text_input",
-             action_id: "feedback_improvment_ml",
-              multiline: true
-            }
-          },
-          {
-            type: "input",
-            block_id: "feedback_other",
-            label: {
-              type: "plain_text",
-              text: "Anything else you would like to share?",
-              emoji: true
-            },
-            element: {
-              type: "plain_text_input",
-              action_id: "feedback_other_ml",
-              multiline: true
-            },
-            optional: true
-          }
-        ]
-      }
+      view: feedbackView(payload)
     });
     console.log(result);
   } catch (error) {
@@ -227,12 +188,22 @@ app.command("/note", async ({ message, context, say, payload, ack, event }) => {
 
 app.view("feedback", async ({ ack, body, view, context }) => {
   ack();
+  console.log(body);
 
-  const improvementResponse = view["state"]["values"]["feedback_improvment"]["feedback_improvment_ml"]
-  const otherResponse = view["state"]["values"]["feedback_other"]["feedback_other_ml"]
+  try {
+    const improvementResponse =
+      view["state"]["values"]["feedback_improvment"]["feedback_improvment_ml"];
+    const otherResponse =
+      view["state"]["values"]["feedback_other"]["feedback_other_ml"];
 
-console.log(improvementResponse)
-
+    insertFeedback(
+      body.user.username,
+      improvementResponse.value,
+      otherResponse.value
+    );
+  } catch (error) {
+    console.log(error);
+  }
 });
 
 // health check for ALB
