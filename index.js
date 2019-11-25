@@ -138,7 +138,7 @@ app.command("/practicely", async ({ command, ack, payload, say }) => {
       break;
     case "create":
       generatePractices();
-      say("Creating practies");
+      say("Creating practices");
       break;
     default:
       say("I don't know that one");
