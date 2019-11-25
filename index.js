@@ -125,18 +125,22 @@ app.action(
 
 app.action(
   "open_feedback_form",
-  async ({ message, context, say, payload, ack, event }) => {
+  async ({ body, context, say, payload, ack, event }) => {
     ack();
     console.log("show view");
     try {
+      const view = await feedbackView(payload)
+
+      console.log(view)
       const result = app.client.views.open({
         token: context.botToken,
         // Pass a valid trigger_id within 3 seconds of receiving it
-        trigger_id: payload.trigger_id,
+        trigger_id: body.trigger_id,
         // View payload
-        view: feedbackView(payload)
-      });
-      console.log(result);
+        view: view
+      }).catch(error => console.log(error));
+
+      
     } catch (error) {
       console.error(error);
     }

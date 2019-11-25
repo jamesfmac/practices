@@ -73,7 +73,7 @@ const practicesReminder = practicesGroupedByTeamLead => {
 
   const blocks = [...intro].concat(...practiceCards);
 
-  return blocks;
+  return {text: text, blocks: blocks};
 };
 
 module.exports = {

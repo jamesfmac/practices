@@ -2,8 +2,12 @@ const { AIRTABLE_BASE_ID } = require("../config");
 const base = require("airtable").base(AIRTABLE_BASE_ID);
 const timezone = "Australia/Sydney";
 const { sendSlackDM } = require("../sendSlackDM");
-const { practiceReminders } = require("../slack-layouts/messages/practicesReminder");
-
+const {
+  practicesReminder
+} = require("../slack-layouts/messages/practicesReminder");
+const {
+  practicesReminderAlt
+} = require("../slack-layouts/messages/practicesRemindersAlt");
 //Set up the dates that we need to find the practices due today
 const moment = require("moment-timezone");
 const date = moment().tz(timezone);
@@ -44,9 +48,13 @@ const createAndDispatchSlackDMs = async groupedPractices => {
       `Sending ${group.practices.length} practices to ${group.email}`
     );
 
-    const blocks = await practiceReminders(groupedPractices);
+    const blockkitMessage = await practicesReminderAlt(group);
 
-    await sendSlackDM(group.email, text, blocks);
+    await sendSlackDM(
+      group.email,
+      blockkitMessage.text,
+      blockkitMessage.blocks
+    );
   }
 };
 

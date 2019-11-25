@@ -1,5 +1,5 @@
-const feedbackView = payload => {
-  return {
+const feedbackView = async payload => {
+  return  {
     type: "modal",
     title: {
       type: "plain_text",
