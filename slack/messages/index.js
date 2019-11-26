@@ -1,4 +1,6 @@
 module.exports = {
   practicesReminderAlt: require("./practicesReminder"),
-  practicesReminderAlt: require("./practicesRemindersAlt")
+  practicesReminderAlt: require("./practicesRemindersAlt"),
+  practicesReminderInline: require("./practicesReminderInline")
+
 };

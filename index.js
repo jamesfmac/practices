@@ -6,11 +6,7 @@ const { updatePracticesLog } = require("./airtable/practicesLog");
 const { feedbackView } = require("./slack/views/feedback");
 const { insertFeedback } = require("./airtable/userFeedback");
 
-const {sendReminders, generatePractices} = require("./scripts")
-
-
-
-
+const { sendReminders, generatePractices } = require("./scripts");
 const {
   scheduleReminders,
   schedulePracticeGeneration
@@ -22,16 +18,6 @@ function noBotMessages({ message, next }) {
     next();
   }
 }
-
-//send reminders to all team leads
-app.message("remind-all", async ({ message, context }) => {
-  try {
-    // Call the chat.scheduleMessage method with a token
-    sendReminders();
-  } catch (error) {
-    console.error(error);
-  }
-});
 
 //listeners for responding to practice updates
 
@@ -145,7 +131,59 @@ app.action(
   }
 );
 
-app.command("/practicely", async ({ command, ack, payload, say }) => {
+app.action(
+  "select_practice_status",
+  async ({ body, context, say, payload, ack }) => {
+    ack();
+
+    try {
+      const originalBlocks = body.message.blocks;
+      const indexOfActionedPractice = originalBlocks.findIndex(
+        x => x.block_id === payload.block_id
+      );
+
+      const splitInputValue = payload.selected_option.value.split("-");
+      const newStatus =
+        splitInputValue[1] == "completed" ? "Completed" : "Missed";
+
+      const updatePracticeLog = await updatePracticesLog({
+        id: splitInputValue[0],
+        fields: {
+          Status: newStatus
+        }
+      });
+
+      const updatedBlocks = updatePracticeLog
+        ? originalBlocks.map((block, index) => {
+            return index === indexOfActionedPractice + 1
+              ? {
+                  type: "context",
+                  elements: [
+                    {
+                      type: "mrkdwn",
+                      text: `:arrow_right: *Status:* ${newStatus}`
+                    }
+                  ]
+                }
+              : block;
+          })
+        : originalBlocks;
+
+      const result = await app.client.chat.update({
+        token: context.botToken,
+        ts: body.message.ts,
+        channel: body.channel.id,
+        text: body.message.text,
+        as_user: true,
+        blocks: updatedBlocks
+      });
+    } catch (error) {
+      console.error(error);
+    }
+  }
+);
+
+app.command("/prac", async ({ command, ack, payload, say }) => {
   // Acknowledge command request
   console.log(payload.text);
   ack();

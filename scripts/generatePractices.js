@@ -42,7 +42,6 @@ const generatePractices = async () => {
   const moment = require("moment-timezone");
   const date = moment().tz(TIMEZONE);
 
-  console.log(`timezone: ${TIMEZONE} date: ${date}`);
 
   const week = () => {
     return date.week() % 2 ? 2 : 1;
@@ -52,7 +51,7 @@ const generatePractices = async () => {
 
   const dateFormattedForAirtable = date.format("YYYY-MM-DD");
 
-  console.log(`Checking schedules for ${dateFormattedForAirtable}`);
+  console.log(`Checking schedules for timezone: ${TIMEZONE} date: ${dateFormattedForAirtable}`);
 
   try {
     //these could be done  in parallel to speed things up

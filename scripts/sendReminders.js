@@ -5,7 +5,8 @@ const { sendSlackDM } = require("../slack/utils/sendSlackDM");
 
 const {
   practicesReminder,
-  practicesReminderAlt
+  practicesReminderAlt,
+  practicesReminderInline
 } = require("../slack/messages");
 
 const groupPracticesByTeamLeadEmail = (list, email) => {
@@ -40,7 +41,7 @@ const createAndDispatchSlackDMs = async groupedPractices => {
       `Sending ${group.practices.length} practices to ${group.email}`
     );
 
-    const blockkitMessage = await practicesReminderAlt(group);
+    const blockkitMessage = await practicesReminderInline(group);
 
     await sendSlackDM(
       group.email,
