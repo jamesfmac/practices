@@ -183,7 +183,7 @@ app.action(
   }
 );
 
-app.command("/prac", async ({ command, ack, payload, say }) => {
+app.command("/practicely", async ({ command, ack, payload, say }) => {
   // Acknowledge command request
   console.log(payload.text);
   ack();
