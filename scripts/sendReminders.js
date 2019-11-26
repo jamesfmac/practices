@@ -1,21 +1,12 @@
-const { AIRTABLE_BASE_ID } = require("../config");
+const { AIRTABLE_BASE_ID, TIMEZONE } = require("../config");
 const base = require("airtable").base(AIRTABLE_BASE_ID);
-const timezone = "Australia/Sydney";
-const { sendSlackDM } = require("../sendSlackDM");
-const {
-  practicesReminder
-} = require("../slack-layouts/messages/practicesReminder");
-const {
-  practicesReminderAlt
-} = require("../slack-layouts/messages/practicesRemindersAlt");
-//Set up the dates that we need to find the practices due today
 const moment = require("moment-timezone");
-const date = moment().tz(timezone);
-const week = () => {
-  return date.week() % 2 ? 2 : 1;
-};
+const { sendSlackDM } = require("../slack/utils/sendSlackDM");
 
-const dateFormattedForAirtable = date.format("YYYY-MM-DD");
+const {
+  practicesReminder,
+  practicesReminderAlt
+} = require("../slack/messages");
 
 const groupPracticesByTeamLeadEmail = (list, email) => {
   return (
@@ -36,6 +27,7 @@ const groupPracticesByTeamLeadEmail = (list, email) => {
   );
 };
 
+//TODO update to handle multiple team leads
 const getListOfUniqueTeamLeads = list => {
   return list
     .map(item => item.fields.TEAM_LEAD_EMAIL[0])
@@ -60,6 +52,11 @@ const createAndDispatchSlackDMs = async groupedPractices => {
 
 const sendReminders = async () => {
   try {
+    //Set up the dates that we need to find the practices due today
+
+    const date = moment().tz(TIMEZONE);
+    const dateFormattedForAirtable = date.format("YYYY-MM-DD");
+
     console.log(`Sending practice reminders for: ${dateFormattedForAirtable}`);
     const practices = base("Practices Log");
 
@@ -106,6 +103,4 @@ const sendReminders = async () => {
   }
 };
 
-module.exports = {
-  sendReminders
-};
+module.exports = sendReminders;

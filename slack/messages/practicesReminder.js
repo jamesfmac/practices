@@ -76,6 +76,5 @@ const practicesReminder = practicesGroupedByTeamLead => {
   return {text: text, blocks: blocks};
 };
 
-module.exports = {
-  practicesReminder
-};
+module.exports = practicesReminder
+

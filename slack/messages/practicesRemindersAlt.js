@@ -92,6 +92,4 @@ const practicesReminderAlt = practicesGroupedByTeamLead => {
   return { text: text, blocks: blocks };
 };
 
-module.exports = {
-  practicesReminderAlt
-};
+module.exports = practicesReminderAlt;

@@ -1,5 +1,5 @@
-const { SLACK_BOT_TOKEN } = require("./config");
-const { app } = require("./app");
+const { SLACK_BOT_TOKEN } = require("../../config");
+const { app } = require("../../boltApp");
 
 const sendSlackDM = async (email, text, blocks) => {
   try {

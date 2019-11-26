@@ -1,4 +1,5 @@
-const feedbackView = async payload => {
+const feedbackView = async body => {
+ 
   return  {
     type: "modal",
     title: {
@@ -22,7 +23,7 @@ const feedbackView = async payload => {
         type: "section",
         text: {
           type: "plain_text",
-          text: `:wave: Hey  <@${payload.user_name}>!\n\nWe'd love to hear about your experience with practicely and what would make it better for you.`,
+          text: `:wave: Hey <@${body.user.username}>!\n\nPracticely is in early alpha and every little bit of feedback is amazing! :star-struck:`,
           emoji: true
         }
       },
@@ -35,7 +36,7 @@ const feedbackView = async payload => {
         block_id: "feedback_improvment",
         label: {
           type: "plain_text",
-          text: "How can practicely be improved?",
+          text: "What is the biggest problem with Practicely?",
           emoji: true
         },
         element: {
@@ -49,7 +50,7 @@ const feedbackView = async payload => {
         block_id: "feedback_other",
         label: {
           type: "plain_text",
-          text: "Anything else you would like to share?",
+          text: "Anything else you would like to see changed?",
           emoji: true
         },
         element: {

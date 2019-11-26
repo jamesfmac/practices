@@ -1,11 +1,15 @@
 const { PORT } = require("./config");
-const { app, receiver } = require("./app");
+const { app, receiver } = require("./boltApp");
 const { updatePracticesLog } = require("./airtable/practicesLog");
 
-const { sendReminders } = require("./scripts/sendReminders");
-const { generatePractices } = require("./scripts/generatePractices");
-const { feedbackView } = require("./slack-layouts/views/feedback");
+
+const { feedbackView } = require("./slack/views/feedback");
 const { insertFeedback } = require("./airtable/userFeedback");
+
+const {sendReminders, generatePractices} = require("./scripts")
+
+
+
 
 const {
   scheduleReminders,
@@ -35,7 +39,6 @@ app.action(
   "completed_practice",
   async ({ body, ack, context, action, payload }) => {
     ack();
-
     try {
       const updatePracticeLog = await updatePracticesLog({
         id: payload.value,
@@ -81,7 +84,6 @@ app.action(
   "missed_practice",
   async ({ body, ack, say, context, action, payload }) => {
     ack();
-
     try {
       const updatePracticeLog = await updatePracticesLog({
         id: payload.value,
@@ -89,7 +91,6 @@ app.action(
           Status: "Missed"
         }
       });
-
       const originalBlocks = body.message.blocks;
       const actionBlockID = action.block_id;
 
@@ -127,20 +128,17 @@ app.action(
   "open_feedback_form",
   async ({ body, context, say, payload, ack, event }) => {
     ack();
-    console.log("show view");
+
     try {
-      const view = await feedbackView(payload)
+      const view = await feedbackView(body);
 
-      console.log(view)
-      const result = app.client.views.open({
-        token: context.botToken,
-        // Pass a valid trigger_id within 3 seconds of receiving it
-        trigger_id: body.trigger_id,
-        // View payload
-        view: view
-      }).catch(error => console.log(error));
-
-      
+      app.client.views
+        .open({
+          token: context.botToken,
+          trigger_id: body.trigger_id,
+          view: view
+        })
+        .catch(error => console.log(error));
     } catch (error) {
       console.error(error);
     }
@@ -171,25 +169,6 @@ app.command("/practicely", async ({ command, ack, payload, say }) => {
   }
 });
 
-//feedback command
-
-app.command("/note", async ({ message, context, say, payload, ack, event }) => {
-  ack();
-  console.log("show view");
-  try {
-    const result = app.client.views.open({
-      token: context.botToken,
-      // Pass a valid trigger_id within 3 seconds of receiving it
-      trigger_id: payload.trigger_id,
-      // View payload
-      view: feedbackView(payload)
-    });
-    console.log(result);
-  } catch (error) {
-    console.error(error);
-  }
-});
-
 app.view("feedback", async ({ ack, body, view, context }) => {
   ack();
   console.log(body);
@@ -210,7 +189,7 @@ app.view("feedback", async ({ ack, body, view, context }) => {
   }
 });
 
-// health check for ALB
+// health check for EB
 
 receiver.app.get("/", (req, res, next) => {
   res.json({ status: "Ok" });
