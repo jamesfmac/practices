@@ -1,16 +1,13 @@
-const { AIRTABLE_BASE_ID } = require("../config");
+const { AIRTABLE_BASE_ID, TIMEZONE } = require("../config");
 const base = require("airtable").base(AIRTABLE_BASE_ID);
-const timezone = "Australia/Sydney";
-const { sendSlackDM } = require("../sendSlackDM");
-
-//Set up the dates that we need to find the practices due today
 const moment = require("moment-timezone");
-const date = moment().tz(timezone);
-const week = () => {
-  return date.week() % 2 ? 2 : 1;
-};
+const { sendSlackDM } = require("../slack/utils/sendSlackDM");
 
-const dateFormattedForAirtable = date.format("YYYY-MM-DD");
+const {
+  practicesReminder,
+  practicesReminderAlt,
+  practicesReminderInline
+} = require("../slack/messages");
 
 const groupPracticesByTeamLeadEmail = (list, email) => {
   return (
@@ -31,6 +28,7 @@ const groupPracticesByTeamLeadEmail = (list, email) => {
   );
 };
 
+//TODO update to handle multiple team leads
 const getListOfUniqueTeamLeads = list => {
   return list
     .map(item => item.fields.TEAM_LEAD_EMAIL[0])
@@ -42,85 +40,24 @@ const createAndDispatchSlackDMs = async groupedPractices => {
     console.log(
       `Sending ${group.practices.length} practices to ${group.email}`
     );
-    const text =
-      group.practices.length > 1
-        ? `${group.practices.length} new practices to update:`
-        : `${group.practices.length} new practice to update:`;
 
-    const intro = [
-      {
-        type: "section",
-        text: {
-          type: "mrkdwn",
-          text: text
-        }
-      }
-    ];
+    const blockkitMessage = await practicesReminderInline(group);
 
-    const practiceCards = group.practices.map(practice => {
-      return [
-        {
-          type: "section",
-          text: {
-            type: "mrkdwn",
-            text: `${practice.practice}`
-          }
-        },
-
-        {
-          type: "section",
-          fields: [
-            {
-              type: "mrkdwn",
-              text: `Project:\n${practice.project}`
-            },
-            {
-              type: "mrkdwn",
-              text: `Date:\n${practice.date}`
-            }
-          ]
-        },
-        {
-          type: "actions",
-          elements: [
-            {
-              type: "button",
-              text: {
-                type: "plain_text",
-                text: "Missed",
-                emoji: true
-              },
-              value: `${practice.id}`,
-              action_id: "missed_practice"
-            },
-            {
-              type: "button",
-              text: {
-                type: "plain_text",
-                text: "Completed",
-                emoji: true
-              },
-              style: "primary",
-              value: `${practice.id}`,
-              action_id: "completed_practice"
-            }
-          ]
-        },
-        {
-          type: "divider"
-        }
-      ];
-    });
-
-  
-    const blocks = [...intro].concat(...practiceCards);
-
-    await sendSlackDM(group.email, text, blocks);
+    await sendSlackDM(
+      group.email,
+      blockkitMessage.text,
+      blockkitMessage.blocks
+    );
   }
 };
 
 const sendReminders = async () => {
   try {
+    //Set up the dates that we need to find the practices due today
+
+    const date = moment().tz(TIMEZONE);
+    const dateFormattedForAirtable = date.format("YYYY-MM-DD");
+
     console.log(`Sending practice reminders for: ${dateFormattedForAirtable}`);
     const practices = base("Practices Log");
 
@@ -167,6 +104,4 @@ const sendReminders = async () => {
   }
 };
 
-module.exports = {
-  sendReminders
-};
+module.exports = sendReminders;

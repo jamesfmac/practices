@@ -7,19 +7,6 @@ const {
 
 const base = require("airtable").base(AIRTABLE_BASE_ID);
 
-//Set up the dates that we need to find the practices due today
-const moment = require("moment-timezone");
-const date = moment().tz(TIMEZONE);
-const week = () => {
-  return date.week() % 2 ? 2 : 1;
-};
-const dayOfWeek = date.day(date.day()).format("ddd");
-const dayOfMonth = date.format("Do");
-
-const dateFormattedForAirtable = date.format("YYYY-MM-DD");
-
-console.log(`Checking schedules for ${dateFormattedForAirtable}`);
-
 const compareExpectedAgainstExisting = async (expected, existing) => {
   const finalarr = [];
 
@@ -31,7 +18,7 @@ const compareExpectedAgainstExisting = async (expected, existing) => {
   return finalarr;
 };
 
-const checkForProjectEndDates = async expectedPractices => {
+const checkForProjectEndDates = async (expectedPractices, date) => {
   let results = [];
   for (const practice of expectedPractices) {
     const projectEndDate = await base("Applied Practices")
@@ -50,9 +37,22 @@ const checkForProjectEndDates = async expectedPractices => {
   return results;
 };
 
-
-
 const generatePractices = async () => {
+  //Set up the dates that we need to find the practices due today
+  const moment = require("moment-timezone");
+  const date = moment().tz(TIMEZONE);
+
+
+  const week = () => {
+    return date.week() % 2 ? 2 : 1;
+  };
+  const dayOfWeek = date.day(date.day()).format("ddd");
+  const dayOfMonth = date.format("Do");
+
+  const dateFormattedForAirtable = date.format("YYYY-MM-DD");
+
+  console.log(`Checking schedules for Timezone: ${TIMEZONE} Date: ${date}`);
+
   try {
     //these could be done  in parallel to speed things up
     const existingPractices = await getPracticesByDate(
@@ -80,11 +80,12 @@ const generatePractices = async () => {
 
     //check project end dates
     const activeExpectedPractice = await checkForProjectEndDates(
-      expectedPractices
+      expectedPractices,
+      date
     );
 
     //compare existing to expected and create the missing ones
-    console.log(expectedPractices);
+
     console.log(
       `${activeExpectedPractice.length} practices scheduled for today`
     );
@@ -104,6 +105,4 @@ const generatePractices = async () => {
     console.error(error);
   }
 };
-module.exports = {
-  generatePractices
-};
+module.exports = generatePractices;
