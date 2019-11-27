@@ -51,7 +51,7 @@ const generatePractices = async () => {
 
   const dateFormattedForAirtable = date.format("YYYY-MM-DD");
 
-  console.log(`Checking schedules for timezone: ${TIMEZONE} date: ${dateFormattedForAirtable}`);
+  console.log(`Checking schedules for Timezone: ${TIMEZONE} Date: ${date}`);
 
   try {
     //these could be done  in parallel to speed things up
