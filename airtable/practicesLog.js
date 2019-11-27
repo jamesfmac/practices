@@ -43,11 +43,12 @@ const insertPractices = (practicesToApply, date) => {
     base("Practices Log").create(newPracticeInstances, function(err, records) {
       if (err) {
         console.error(err);
-        return;
+        return error;
       }
       records.forEach(function(record) {
         console.log(`Created: ${record.getId()} ${record.get("Date")}`);
       });
+      return "Practices Created";
     });
   });
 };

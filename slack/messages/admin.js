@@ -1,7 +1,7 @@
 const admin = async body => {
   
 
-  const text = `Hey <@${body.user_id}> here are your admin powers`;
+  const text = `Hey <@${body.user_id}> here are your admin powers :zap:`;
 
   const intro = [
     {
@@ -24,17 +24,18 @@ const admin = async body => {
             text: "My Practices",
             emoji: true
           },
-          value: "my_practices",
+        
+          action_id: "my_practices",
           style: "primary"
         },
         {
           type: "button",
           text: {
             type: "plain_text",
-            text: ":speaking_head_in_silhouette: Remind All",
+            text: "Remind All",
             emoji: true
           },
-          value: "create_practices",
+          action_id: "remind_all",
           style: "danger"
         },
         {
@@ -44,10 +45,11 @@ const admin = async body => {
               text: "Show Help",
               emoji: true
             },
-            value: "check_status"
+            action_id: "show_help"
           },
         {
           type: "overflow",
+          action_id: "admin_overflow",
           options: [
             {
               text: {
@@ -55,7 +57,7 @@ const admin = async body => {
                 text: "Generate Practices",
                 emoji: true
               },
-              value: "generate_practices"
+              value: "create_practices"
             },
             {
               text: {

@@ -4,14 +4,19 @@ const { updatePracticesLog } = require("./airtable/practicesLog");
 
 const { feedbackView } = require("./slack/views/feedback");
 const { insertFeedback } = require("./airtable/userFeedback");
-const { practicelyHandler } = require("./slack/commands");
+const { practicelySlashHandler } = require("./slack/commands");
+const {
+  my_practicesActionHandler,
+  show_helpActionHandler,
+  create_practicesActionHandler,
+  remind_allActionHandler,
+  admin_overflowActionHandler
+} = require("./slack/actions");
 
 const {
   scheduleReminders,
   schedulePracticeGeneration
 } = require("./scripts/schedule");
-
-
 
 // Listener middleware that filters out messages with 'bot_message' subtype
 function noBotMessages({ message, next }) {
@@ -184,7 +189,13 @@ app.action(
   }
 );
 
-app.command("/practicely", practicelyHandler);
+app.command("/practicely", practicelySlashHandler);
+
+app.action("my_practices", my_practicesActionHandler);
+app.action("show_help", show_helpActionHandler);
+app.action("create_practices", create_practicesActionHandler);
+app.action("remind_all", remind_allActionHandler);
+app.action("admin_overflow", admin_overflowActionHandler);
 
 app.view("feedback", async ({ ack, body, view, context }) => {
   ack();
