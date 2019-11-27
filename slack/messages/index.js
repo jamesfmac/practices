@@ -1,6 +1,6 @@
 module.exports = {
   practicesReminderAlt: require("./practicesReminder"),
   practicesReminderAlt: require("./practicesRemindersAlt"),
-  practicesReminderInline: require("./practicesReminderInline")
-
+  practicesReminderInline: require("./practicesReminderInline"),
+  admin: require("./admin")
 };

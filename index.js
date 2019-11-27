@@ -2,17 +2,16 @@ const { PORT } = require("./config");
 const { app, receiver } = require("./boltApp");
 const { updatePracticesLog } = require("./airtable/practicesLog");
 
-
 const { feedbackView } = require("./slack/views/feedback");
 const { insertFeedback } = require("./airtable/userFeedback");
+const { practicelyHandler } = require("./slack/commands");
 
-const { sendReminders, generatePractices } = require("./scripts");
 const {
   scheduleReminders,
   schedulePracticeGeneration
 } = require("./scripts/schedule");
 
-const {getUsersInfo} = require("./slack/utils")
+
 
 // Listener middleware that filters out messages with 'bot_message' subtype
 function noBotMessages({ message, next }) {
@@ -185,38 +184,10 @@ app.action(
   }
 );
 
-app.command("/prac", async ({ command, ack, payload, say }) => {
-  // Acknowledge command request
-  
-  ack();
-  const userInfo = await getUsersInfo(payload.user_id)
-
-
-  const input = payload.text;
-
-  switch (input) {
-    case "ping":
-      say("Status OK");
-      break;
-    case "mine":
-      sendReminders(userInfo.profile.email)
-      break;
-    case "remind":
-      sendReminders();
-      say("Reminders away");
-      break;
-    case "create":
-      generatePractices();
-      say("Creating practices");
-      break;
-    default:
-      say("I don't know that one");
-  }
-});
+app.command("/practicely", practicelyHandler);
 
 app.view("feedback", async ({ ack, body, view, context }) => {
   ack();
-
 
   try {
     const improvementResponse =
