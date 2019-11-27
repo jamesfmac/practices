@@ -12,6 +12,8 @@ const {
   schedulePracticeGeneration
 } = require("./scripts/schedule");
 
+const {getUsersInfo} = require("./slack/utils")
+
 // Listener middleware that filters out messages with 'bot_message' subtype
 function noBotMessages({ message, next }) {
   if (!message.subtype || message.subtype !== "bot_message") {
@@ -183,16 +185,21 @@ app.action(
   }
 );
 
-app.command("/practicely", async ({ command, ack, payload, say }) => {
+app.command("/prac", async ({ command, ack, payload, say }) => {
   // Acknowledge command request
-  console.log(payload.text);
+  
   ack();
+  const userInfo = await getUsersInfo(payload.user_id)
+
 
   const input = payload.text;
 
   switch (input) {
     case "ping":
       say("Status OK");
+      break;
+    case "mine":
+      sendReminders(userInfo.profile.email)
       break;
     case "remind":
       sendReminders();
@@ -209,7 +216,7 @@ app.command("/practicely", async ({ command, ack, payload, say }) => {
 
 app.view("feedback", async ({ ack, body, view, context }) => {
   ack();
-  console.log(body);
+
 
   try {
     const improvementResponse =
