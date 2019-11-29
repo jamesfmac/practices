@@ -11,11 +11,23 @@ const practicelySlashHandler = async ({ body, context, ack, payload, say }) => {
   const slackUserInfo = await getUsersInfo(payload.user_id);
   const practicesUserInfo = await getTeamLead(slackUserInfo.profile.email);
 
+  console.log(practicesUserInfo);
+
   const responseMessage = await admin(body);
 
-  const input = payload.text;
+ 
 
-  if (practicesUserInfo["Practices Admin"]) {
+  if ((practicesUserInfo == undefined)) {
+    app.client.chat
+      .postEphemeral({
+        token: context.botToken,
+        user: payload.user_id,
+        as_user: false,
+        channel: body.channel_id,
+        text: "Sorry, I couldn't find a user account for you"
+      })
+      .catch(error => console.log(error));
+  } else if (practicesUserInfo["Practices Admin"]) {
     app.client.chat
       .postEphemeral({
         token: context.botToken,

@@ -4,7 +4,7 @@ const base = require("airtable").base(AIRTABLE_BASE_ID);
 const getTeamLead = async userEmail => {
   try {
     const lookupFormula = `{Email Address}="${userEmail}"`;
-   
+
     const teamLeads = base("Team Leads");
     return teamLeads
       .select({
@@ -14,9 +14,14 @@ const getTeamLead = async userEmail => {
       })
       .all()
       .then(records => {
+        console.log(records);
+
         return records[0].fields;
       })
-      .catch(error => console.log(error));
+      .catch(error => {
+        console.log(error);
+        return;
+      });
   } catch (error) {
     console.log(error);
     return error;
