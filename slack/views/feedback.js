@@ -4,7 +4,7 @@ const feedbackView = async body => {
     type: "modal",
     title: {
       type: "plain_text",
-      text: "Feedback on Practicely",
+      text: "Give Feedback",
       emoji: true
     },
     callback_id: "feedback",

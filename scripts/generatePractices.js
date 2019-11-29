@@ -100,7 +100,9 @@ const generatePractices = async () => {
 
     console.log(`${practicesToCreate.length} to be added`);
 
-    insertPractices(practicesToCreate, dateFormattedForAirtable);
+    const result = insertPractices(practicesToCreate, dateFormattedForAirtable);
+
+    return result
   } catch (error) {
     console.error(error);
   }
