@@ -6,7 +6,7 @@ const { feedbackView } = require("./slack/views/feedback");
 const { insertFeedback } = require("./airtable/userFeedback");
 const { practicelySlashHandler } = require("./slack/commands");
 const {
-  my_practicesActionHandler,
+  open_practices_logActionHandler,
   show_helpActionHandler,
   create_practicesActionHandler,
   remind_allActionHandler,
@@ -191,7 +191,7 @@ app.action(
 
 app.command("/practicely", practicelySlashHandler);
 
-app.action("my_practices", my_practicesActionHandler);
+app.action("open_practices_log", open_practices_logActionHandler);
 app.action("show_help", show_helpActionHandler);
 app.action("create_practices", create_practicesActionHandler);
 app.action("remind_all", remind_allActionHandler);

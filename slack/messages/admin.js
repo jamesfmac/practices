@@ -1,6 +1,4 @@
 const admin = async body => {
-  
-
   const text = `Hey <@${body.user_id}> here are your admin powers :zap:`;
 
   const intro = [
@@ -13,6 +11,25 @@ const admin = async body => {
     }
   ];
 
+  const confirmObject = {
+    title: {
+      type: "plain_text",
+      text: "Are you sure?"
+    },
+    text: {
+      type: "mrkdwn",
+      text: "This will message all team leads with asking them to update their pending practices for  today"
+    },
+    confirm: {
+      type: "plain_text",
+      text: "Do it"
+    },
+    deny: {
+      type: "plain_text",
+      text: "Stop, I've changed my mind!"
+    }
+  };
+
   const actions = [
     {
       type: "actions",
@@ -21,11 +38,11 @@ const admin = async body => {
           type: "button",
           text: {
             type: "plain_text",
-            text: "My Practices",
+            text: "Log Practices",
             emoji: true
           },
-        
-          action_id: "my_practices",
+
+          action_id: "open_practices_log",
           style: "primary"
         },
         {
@@ -36,17 +53,18 @@ const admin = async body => {
             emoji: true
           },
           action_id: "remind_all",
-          style: "danger"
+          style: "danger",
+          confirm: confirmObject
         },
         {
-            type: "button",
-            text: {
-              type: "plain_text",
-              text: "Show Help",
-              emoji: true
-            },
-            action_id: "show_help"
+          type: "button",
+          text: {
+            type: "plain_text",
+            text: "Show Help",
+            emoji: true
           },
+          action_id: "show_help"
+        },
         {
           type: "overflow",
           action_id: "admin_overflow",

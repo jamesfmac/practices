@@ -1,7 +1,7 @@
 const { getUsersInfo } = require("../utils");
 const {sendReminders} = require ("../../scripts")
 
-const my_practicesActionHandler = async ({
+const open_practices_logActionHandler = async ({
   body,
   ack,
   context,
@@ -17,4 +17,4 @@ const my_practicesActionHandler = async ({
     console.log(error);
   }
 };
-module.exports = my_practicesActionHandler;
+module.exports = open_practices_logActionHandler;
