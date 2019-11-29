@@ -2,11 +2,17 @@ const { PORT } = require("./config");
 const { app, receiver } = require("./boltApp");
 const { updatePracticesLog } = require("./airtable/practicesLog");
 
-
 const { feedbackView } = require("./slack/views/feedback");
 const { insertFeedback } = require("./airtable/userFeedback");
+const { practicelySlashHandler } = require("./slack/commands");
+const {
+  open_practices_logActionHandler,
+  show_helpActionHandler,
+  create_practicesActionHandler,
+  remind_allActionHandler,
+  admin_overflowActionHandler
+} = require("./slack/actions");
 
-const { sendReminders, generatePractices } = require("./scripts");
 const {
   scheduleReminders,
   schedulePracticeGeneration
@@ -183,33 +189,16 @@ app.action(
   }
 );
 
-app.command("/practicely", async ({ command, ack, payload, say }) => {
-  // Acknowledge command request
-  console.log(payload.text);
-  ack();
+app.command("/practicely", practicelySlashHandler);
 
-  const input = payload.text;
-
-  switch (input) {
-    case "ping":
-      say("Status OK");
-      break;
-    case "remind":
-      sendReminders();
-      say("Reminders away");
-      break;
-    case "create":
-      generatePractices();
-      say("Creating practices");
-      break;
-    default:
-      say("I don't know that one");
-  }
-});
+app.action("open_practices_log", open_practices_logActionHandler);
+app.action("show_help", show_helpActionHandler);
+app.action("create_practices", create_practicesActionHandler);
+app.action("remind_all", remind_allActionHandler);
+app.action("admin_overflow", admin_overflowActionHandler);
 
 app.view("feedback", async ({ ack, body, view, context }) => {
   ack();
-  console.log(body);
 
   try {
     const improvementResponse =

@@ -1,7 +1,7 @@
 const { SLACK_BOT_TOKEN } = require("../../config");
 const { app } = require("../../boltApp");
 
-const sendSlackDM = async (email, text, blocks) => {
+const postDM = async (email, text, blocks) => {
   try {
     console.log(`Attempting: DM to ${email}`);
     const user = await app.client.users.lookupByEmail({
@@ -29,6 +29,4 @@ const sendSlackDM = async (email, text, blocks) => {
   }
 };
 
-module.exports = {
-  sendSlackDM
-};
+module.exports = postDM;

@@ -1,7 +1,7 @@
 const { AIRTABLE_BASE_ID, TIMEZONE } = require("../config");
 const base = require("airtable").base(AIRTABLE_BASE_ID);
 const moment = require("moment-timezone");
-const { sendSlackDM } = require("../slack/utils/sendSlackDM");
+const { postDM } = require("../slack/utils")
 
 const {
   practicesReminder,
@@ -43,7 +43,7 @@ const createAndDispatchSlackDMs = async groupedPractices => {
 
     const blockkitMessage = await practicesReminderInline(group);
 
-    await sendSlackDM(
+    await postDM(
       group.email,
       blockkitMessage.text,
       blockkitMessage.blocks
@@ -51,17 +51,30 @@ const createAndDispatchSlackDMs = async groupedPractices => {
   }
 };
 
-const sendReminders = async () => {
+const sendReminders = async email => {
   try {
     //Set up the dates that we need to find the practices due today
+
+    const userEmail = email || null;
+
+    if (userEmail) {
+      console.log(`Checking practice reminders for ${userEmail}`);
+    } else {
+      console.log("Checking practice reminders for all team leads");
+    }
+
+    const teamLeadEmailFilter = userEmail
+      ? `Team_Lead_Email="${userEmail}"`
+      : `Team_Lead_Email!=""`;
 
     const date = moment().tz(TIMEZONE);
     const dateFormattedForAirtable = date.format("YYYY-MM-DD");
 
-    console.log(`Sending practice reminders for: ${dateFormattedForAirtable}`);
     const practices = base("Practices Log");
 
-    const lookupFormula = `AND(IS_SAME(Date,"${dateFormattedForAirtable}", 'day' ), Status = 'Pending',Team_Lead_Email!="" )`;
+    const lookupFormula = `AND(IS_SAME(Date,"${dateFormattedForAirtable}", 'day' ), Status = 'Pending', ${teamLeadEmailFilter})`;
+
+
 
     //get a list of the practices due today, group them by team lead email and shape data
 
@@ -82,7 +95,7 @@ const sendReminders = async () => {
       todaysPractices
     );
     console.log(
-      `These people have practices due: ${listOfTeamLeadsWithPracticesDue}`
+      `Pending practices found for: ${listOfTeamLeadsWithPracticesDue}`
     );
 
     const formattedTodaysPractices = await listOfTeamLeadsWithPracticesDue.map(
