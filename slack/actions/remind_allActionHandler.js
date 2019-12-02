@@ -1,5 +1,5 @@
 const { getUsersInfo } = require("../utils");
-const {sendReminders} = require ("../../scripts")
+const {sendReminders} = require ("../../methods")
 
 const remind_allActionHandler = async ({
   body,

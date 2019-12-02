@@ -1,21 +1,19 @@
-const { app } = require("../../boltApp");
-
 const { getTeamLead } = require("../../airtable");
-const { getUsersInfo } = require("../utils");
-const { admin } = require("../messages");
+const { getUsersInfo } = require("../slack/utils");
+const { admin } = require("../slack/messages");
 
-const practicelySlashHandler = async ({ body, context, ack, payload, say }) => {
+module.exports = async ({ body, context, ack, payload, say }) => {
   // Acknowledge command request
 
   ack();
   const slackUserInfo = await getUsersInfo(payload.user_id);
   const practicesUserInfo = await getTeamLead(slackUserInfo.profile.email);
 
+  console.log(practicesUserInfo);
+
   const responseMessage = await admin(body);
 
- 
-
-  if ((practicesUserInfo == undefined)) {
+  if (practicesUserInfo == undefined) {
     app.client.chat
       .postEphemeral({
         token: context.botToken,
@@ -47,6 +45,4 @@ const practicelySlashHandler = async ({ body, context, ack, payload, say }) => {
       })
       .catch(error => console.log(error));
   }
-};
-
-module.exports = practicelySlashHandler;
+}

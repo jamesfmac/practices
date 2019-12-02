@@ -1,5 +1,5 @@
 const { getUsersInfo } = require("../utils");
-const { generatePractices } = require("../../scripts");
+const { generatePractices } = require("../../methods");
 
 const admin_overflowActionHandler = async ({
   body,

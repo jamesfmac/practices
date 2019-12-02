@@ -1,5 +1,5 @@
 const { getUsersInfo } = require("../utils");
-const {sendReminders} = require ("../../scripts")
+const {sendReminders} = require ("../../methods")
 
 const open_practices_logActionHandler = async ({
   body,

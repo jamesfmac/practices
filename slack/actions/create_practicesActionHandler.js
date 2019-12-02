@@ -1,6 +1,6 @@
 const {app} = require("../../boltApp")
 const { getUsersInfo } = require("../utils");
-const {generatePractices} = require ("../../scripts")
+const {generatePractices} = require ("../../methods")
 
 
 const my_practicesActionHandler = async ({
