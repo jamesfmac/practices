@@ -6,31 +6,31 @@ const {
   admin_overflowActionHandler
 } = require("./slack/actions");
 
-const { practicelySlashHandler } = require("./slack/commands");
+const { practicelySlashCommand } = require("./controllers");
+
 
 const { feedbackView } = require("./slack/views/feedback");
-const { insertFeedback } = require("./airtable/userFeedback");
-const { updatePracticesLog } = require("./airtable/practicesLog");
+const { insertFeedback } = require("./APIs/airtable/userFeedback");
+const { updatePracticesLog } = require("./APIs/airtable/practicesLog");
 
 module.exports = function(app) {
-  app.command("/practicely", practicelySlashHandler);
+  app.command("/practicely", practicelySlashCommand);
   app.action("open_practices_log", open_practices_logActionHandler);
   app.action("show_help", show_helpActionHandler);
   app.action("create_practices", create_practicesActionHandler);
   app.action("remind_all", remind_allActionHandler);
   app.action("admin_overflow", admin_overflowActionHandler);
 
-
   //TODO refactor to use controllers
 
-app.action(
+  app.action(
     "open_feedback_form",
     async ({ body, context, say, payload, ack, event }) => {
       ack();
-  
+
       try {
         const view = await feedbackView(body);
-  
+
         app.client.views
           .open({
             token: context.botToken,
@@ -43,29 +43,29 @@ app.action(
       }
     }
   );
-  
+
   app.action(
     "select_practice_status",
     async ({ body, context, say, payload, ack }) => {
       ack();
-  
+
       try {
         const originalBlocks = body.message.blocks;
         const indexOfActionedPractice = originalBlocks.findIndex(
           x => x.block_id === payload.block_id
         );
-  
+
         const splitInputValue = payload.selected_option.value.split("-");
         const newStatus =
           splitInputValue[1] == "completed" ? "Completed" : "Missed";
-  
+
         const updatePracticeLog = await updatePracticesLog({
           id: splitInputValue[0],
           fields: {
             Status: newStatus
           }
         });
-  
+
         const updatedBlocks = updatePracticeLog
           ? originalBlocks.map((block, index) => {
               return index === indexOfActionedPractice + 1
@@ -81,7 +81,7 @@ app.action(
                 : block;
             })
           : originalBlocks;
-  
+
         const result = await app.client.chat.update({
           token: context.botToken,
           ts: body.message.ts,
@@ -95,16 +95,18 @@ app.action(
       }
     }
   );
-  
+
   app.view("feedback", async ({ ack, body, view, context }) => {
     ack();
-  
+
     try {
       const improvementResponse =
-        view["state"]["values"]["feedback_improvment"]["feedback_improvment_ml"];
+        view["state"]["values"]["feedback_improvment"][
+          "feedback_improvment_ml"
+        ];
       const otherResponse =
         view["state"]["values"]["feedback_other"]["feedback_other_ml"];
-  
+
       insertFeedback(
         body.user.username,
         improvementResponse.value,
@@ -114,7 +116,4 @@ app.action(
       console.log(error);
     }
   });
-
-  
-
 };

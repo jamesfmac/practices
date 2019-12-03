@@ -3,10 +3,7 @@ const {sendReminders} = require ("../../methods")
 
 const open_practices_logActionHandler = async ({
   body,
-  ack,
-  context,
-  action,
-  payload
+  ack
 }) => {
  
   ack();

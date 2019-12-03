@@ -1,4 +1,4 @@
-const { AIRTABLE_BASE_ID } = require("../config");
+const { AIRTABLE_BASE_ID } = require("../../config");
 const base = require("airtable").base(AIRTABLE_BASE_ID);
 
 const getTeamLead = async userEmail => {
@@ -14,9 +14,9 @@ const getTeamLead = async userEmail => {
       })
       .all()
       .then(records => {
-        console.log(records);
-
         return records[0].fields;
+
+        return null, records[0].fields;
       })
       .catch(error => {
         console.log(error);
@@ -24,7 +24,7 @@ const getTeamLead = async userEmail => {
       });
   } catch (error) {
     console.log(error);
-    return error;
+    throw error;
   }
 };
 

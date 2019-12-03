@@ -3,7 +3,7 @@ const { TIMEZONE, AIRTABLE_BASE_ID } = require("../config");
 const {
   insertPractices,
   getPracticesByDate
-} = require("../airtable/practicesLog");
+} = require("../APIs/airtable/practicesLog");
 
 const base = require("airtable").base(AIRTABLE_BASE_ID);
 
@@ -41,7 +41,6 @@ const generatePractices = async () => {
   //Set up the dates that we need to find the practices due today
   const moment = require("moment-timezone");
   const date = moment().tz(TIMEZONE);
-
 
   const week = () => {
     return date.week() % 2 ? 2 : 1;
@@ -102,7 +101,7 @@ const generatePractices = async () => {
 
     const result = insertPractices(practicesToCreate, dateFormattedForAirtable);
 
-    return result
+    return result;
   } catch (error) {
     console.error(error);
   }

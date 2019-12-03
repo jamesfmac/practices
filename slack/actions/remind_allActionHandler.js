@@ -1,4 +1,4 @@
-const { getUsersInfo } = require("../utils");
+
 const {sendReminders} = require ("../../methods")
 
 const remind_allActionHandler = async ({
@@ -10,7 +10,7 @@ const remind_allActionHandler = async ({
 }) => {
  
   ack();
-  const slackUserInfo = await getUsersInfo(body.user.id);
+
   sendReminders();
   try {
   } catch (error) {

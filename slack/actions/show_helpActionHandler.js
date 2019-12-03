@@ -1,4 +1,3 @@
-const { app } = require("../../boltApp");
 
 const show_helpActionHandler = async ({
   body,

@@ -3,7 +3,6 @@ const { app } = require("../../boltApp");
 
 const getUsersInfo = async user_id => {
   try {
- 
     const response = await app.client.users.info({
       token: SLACK_BOT_TOKEN,
       user: user_id
