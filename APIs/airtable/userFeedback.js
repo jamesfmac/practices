@@ -16,7 +16,7 @@ const insertFeedback = async (user, improvement, other) => {
         Improvement: improvement,
         Other: other
       })
-      .then(record => console.log('`Feedback submitted'))
+      .then(record => console.log("`Feedback submitted"))
       .catch(error => {
         console.log(error);
       });
@@ -25,6 +25,4 @@ const insertFeedback = async (user, improvement, other) => {
   }
 };
 
-module.exports = {
-  insertFeedback
-};
+module.exports = insertFeedback;

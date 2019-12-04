@@ -1,13 +1,9 @@
 const { AIRTABLE_BASE_ID, TIMEZONE } = require("../config");
 const base = require("airtable").base(AIRTABLE_BASE_ID);
 const moment = require("moment-timezone");
-const { postDM } = require("../slack/utils")
+const { postDM } = require("../slack/utils");
 
-const {
-  practicesReminder,
-  practicesReminderAlt,
-  practicesReminderInline
-} = require("../slack/messages");
+const { practicesReminderInline } = require("../views");
 
 const groupPracticesByTeamLeadEmail = (list, email) => {
   return (
@@ -43,11 +39,7 @@ const createAndDispatchSlackDMs = async groupedPractices => {
 
     const blockkitMessage = await practicesReminderInline(group);
 
-    await postDM(
-      group.email,
-      blockkitMessage.text,
-      blockkitMessage.blocks
-    );
+    await postDM(group.email, blockkitMessage.text, blockkitMessage.blocks);
   }
 };
 
@@ -73,8 +65,6 @@ const sendReminders = async email => {
     const practices = base("Practices Log");
 
     const lookupFormula = `AND(IS_SAME(Date,"${dateFormattedForAirtable}", 'day' ), Status = 'Pending', ${teamLeadEmailFilter})`;
-
-
 
     //get a list of the practices due today, group them by team lead email and shape data
 

@@ -1,7 +1,7 @@
 const { getTeamLead } = require("../APIs/airtable");
 const { getUsersInfo } = require("../slack/utils");
-const { admin } = require("../slack/messages");
-const { postEphemeral } = require("../APIs/slack");
+const { admin } = require("../views");
+const { chatPostEphemeral } = require("../APIs/slack");
 
 const practicelySlashCommand = async ({ body, context, ack, payload, say }) => {
   // Acknowledge command request
@@ -14,7 +14,7 @@ const practicelySlashCommand = async ({ body, context, ack, payload, say }) => {
     const responseMessage = await admin(body);
 
     if (practicesUserInfo == undefined) {
-      postEphemeral({
+        chatPostEphemeral({
         token: context.botToken,
         user: payload.user_id,
         channel: body.channel_id,
@@ -22,15 +22,15 @@ const practicelySlashCommand = async ({ body, context, ack, payload, say }) => {
         blocks: null
       });
     } else if (practicesUserInfo["Practices Admin"]) {
-      postEphemeral({
+        chatPostEphemeral({
         token: context.botToken,
         user: payload.user_id,
         channel: body.channel_id,
         text: String(responseMessage.text),
         blocks: responseMessage.blocks
-      })
+      });
     } else {
-      postEphemeral({
+        chatPostEphemeral({
         token: context.botToken,
         user: payload.user_id,
         channel: body.channel_id,
@@ -39,7 +39,7 @@ const practicelySlashCommand = async ({ body, context, ack, payload, say }) => {
       });
     }
   } catch (error) {
-    console.log(error)
+    console.log(error);
   }
 };
 module.exports = practicelySlashCommand;

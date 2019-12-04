@@ -1,3 +1,5 @@
 module.exports = {
-  postEphemeral: require("./postEphemeral")
+  chatPostEphemeral: require("./chatPostEphemeral"),
+  chatUpdate: require("./chatUpdate"),
+  viewsOpen: require("./viewsOpen")
 };

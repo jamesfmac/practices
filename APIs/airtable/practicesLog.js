@@ -1,5 +1,6 @@
-const { AIRTABLE_BASE_ID } = require("../../config");
+const { AIRTABLE_BASE_ID,  } = require("../../config");
 const base = require("airtable").base(AIRTABLE_BASE_ID);
+
 
 // helper function to chunk an array
 const chunk = (array, size) => {
@@ -12,12 +13,10 @@ const chunk = (array, size) => {
 };
 
 const updatePracticesLog = async updates => {
-
   try {
     return base("Practices Log")
       .update([updates])
       .then(records => {
-    
         return true;
       });
   } catch (error) {
@@ -69,8 +68,11 @@ const getPracticesByDate = async date => {
   });
 };
 
+
+
 module.exports = {
   updatePracticesLog,
   insertPractices,
-  getPracticesByDate
+  getPracticesByDate,
+  
 };
