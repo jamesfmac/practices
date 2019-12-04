@@ -1,5 +1,6 @@
 module.exports = {
   practicesReminderInline: require("./practicesReminderInline"),
   admin: require("./admin"),
-  feedbackModal: require("./feedbackModal")
+  feedbackModal: require("./feedbackModal"),
+  logPracticesModal: require("./logPracticesModal")
 };

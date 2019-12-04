@@ -3,5 +3,6 @@ module.exports = {
   selectPracticeStatus: require("./selectPracticeStatus"),
   showFeedbackModal: require("./showFeedbackModal"),
   submitFeedbackModal: require("./submitFeedbackModal"),
-  showLogPracticesModal: require("./showLogPracticesModal")
+  showLogPracticesModal: require("./showLogPracticesModal"),
+  setPracticeStatusFromModal: require("./setPracticeStatusFromModal")
 };

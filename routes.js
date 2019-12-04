@@ -12,7 +12,8 @@ const {
   selectPracticeStatus,
   showFeedbackModal,
   submitFeedbackModal,
-  showLogPracticesModal
+  showLogPracticesModal,
+  setPracticeStatusFromModal
 } = require("./controllers");
 
 module.exports = function(app) {
@@ -32,6 +33,8 @@ module.exports = function(app) {
   app.action("open_feedback_form", showFeedbackModal);
 
   app.action("select_practice_status", selectPracticeStatus);
+
+  app.action("setPracticeStatusFromModal", setPracticeStatusFromModal)
 
   app.view("feedback", submitFeedbackModal);
 };

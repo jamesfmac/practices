@@ -1,37 +1,11 @@
 const { getUsersInfo } = require("../slack/utils");
 const { getPracticesLog } = require("../APIs/airtable");
+const { logPracticesModal } = require("../views");
 const { TIMEZONE } = require("../config");
 const moment = require("moment-timezone");
+const { viewsOpen } = require("../APIs/slack");
 
-const groupPracticesByDate = (list, date) => {
-  return (
-    list
-      //  filter out items not matching the email address
-      .filter(item => {
-    
-        return item.Date === date;
-      })
-      //  map the practice to the desired shape
-      .map(record => {
-        return {
-          id: record.id,
-          email: record.TEAM_LEAD_EMAIL[0],
-          practice: record.PRACTICE_NAME[0],
-          project: record.PROJECT_NAME[0],
-          date: moment(record.Date).format("dddd, Do MMM"),
-          status: record.Status
-        };
-      })
-  );
-};
-
-const getUniqueDates = list => {
-  return list
-    .map(item => item.Date)
-    .filter((date, index, all) => all.indexOf(date) === index);
-};
-
-module.exports = async ({ body, ack, say }) => {
+module.exports = async ({ body, context, ack, say }) => {
   ack();
   try {
     //set up date ranges
@@ -47,7 +21,7 @@ module.exports = async ({ body, ack, say }) => {
       .format("YYYY-MM-DD");
 
     const slackUserInfo = await getUsersInfo(body.user.id);
-    say(slackUserInfo.profile.email);
+  
 
     //get matching practice instances from Airtable
 
@@ -60,10 +34,7 @@ module.exports = async ({ body, ack, say }) => {
 
     //group practices by date
 
-    //get list of unique dates
-
     const uniqueDates = getUniqueDates(practices);
-  
 
     const practicesGroupedByDate = await uniqueDates.map(date => {
       return {
@@ -72,12 +43,48 @@ module.exports = async ({ body, ack, say }) => {
       };
     });
 
-    console.log(practicesGroupedByDate);
+   
 
     //get view
 
+    const view = await logPracticesModal(practicesGroupedByDate);
+
     //open view
+
+    viewsOpen({
+      token: context.botToken,
+      trigger_id: body.trigger_id,
+      view: view
+    });
   } catch (error) {
     console.log(error);
   }
+};
+
+const groupPracticesByDate = (list, date) => {
+  return (
+    list
+      //  filter out items not matching date
+      .filter(item => {
+        return item.fields.Date === date;
+      })
+      //  map the practice to the desired shape
+      .map(record => {
+       
+        return {
+          id: record.id,
+          email: record.fields.TEAM_LEAD_EMAIL[0],
+          practice: record.fields.PRACTICE_NAME[0],
+          project: record.fields.PROJECT_NAME[0],
+          date: moment(record.fields.Date).format("dddd, Do MMM"),
+          status: record.fields.Status
+        };
+      })
+  );
+};
+
+const getUniqueDates = list => {
+  return list
+    .map(item => item.fields.Date)
+    .filter((date, index, all) => all.indexOf(date) === index);
 };

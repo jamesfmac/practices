@@ -13,6 +13,7 @@ const chunk = (array, size) => {
 };
 
 const updatePracticesLog = async updates => {
+ 
   try {
     return base("Practices Log")
       .update([updates])

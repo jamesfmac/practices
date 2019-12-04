@@ -6,12 +6,10 @@ module.exports = async searchCriteria => {
   const base = require("airtable").base(AIRTABLE_BASE_ID);
   const practices = base("Practices Log");
 
- 
   const { email, status, afterDate, beforeDate } = searchCriteria;
 
-  const todaysDate = moment()
-    .tz(TIMEZONE)
-   
+  const todaysDate = moment().tz(TIMEZONE);
+
   const defaultAfterDate = todaysDate.subtract(1, "day").format("YYYY-MM-DD");
   const defaultBeforeDate = todaysDate.add(1, "month").format("YYYY-MM-DD");
 
@@ -38,7 +36,6 @@ module.exports = async searchCriteria => {
 
   const finalFilter = `AND(Practice!="", ${combinedFilters})`;
 
-
   const matchingPractices = await practices
     .select({
       view: "All Logged Practices",
@@ -48,7 +45,13 @@ module.exports = async searchCriteria => {
     .then(records => {
       return [].concat.apply(
         [],
-        records.map(record => record.fields)
+        records.map(record => {
+       
+          return {
+            id: record.id,
+            fields: record.fields
+          };
+        })
       );
     })
     .catch(error => {
