@@ -1,10 +1,10 @@
 const { PORT } = require("./config");
-const { app, receiver } = require("./boltApp");
+const { app, receiver } = require("./src/bolt");
 
 const {
   scheduleReminders,
   schedulePracticeGeneration
-} = require("./schedules");
+} = require("./src/schedules");
 
 scheduleReminders.start();
 schedulePracticeGeneration.start();
@@ -19,7 +19,7 @@ function noBotMessages({ message, next }) {
 }
 
 //mount routes for Slack actions and commands
-require("./routes")(app);
+require("./src/routes")(app);
 
 //create a health check endpoint for EB
 
