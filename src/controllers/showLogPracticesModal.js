@@ -27,7 +27,9 @@ module.exports = async ({ body, context, ack, say }) => {
       email: slackUserInfo.profile.email,
       status: "Pending",
       beforeDate: tomorrow,
-      afterDate: startOfMonth
+      afterDate: startOfMonth,
+      maxRecords: 25,
+      sort: [{ field: "Date", direction: "desc" }]
     });
 
     //group practices by date

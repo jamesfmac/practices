@@ -82,7 +82,7 @@ module.exports = async practices => {
       }
     }
   ];
-  console.log('issues to update', dayBlocks.length)
+
 
   const body = dayBlocks.length >= 1 ? dayBlocks : altBody;
 
