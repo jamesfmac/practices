@@ -53,7 +53,7 @@ module.exports = async ({ body, context, ack, say }) => {
       view: view
     });
   } catch (error) {
-    console.log(error);
+    console.log('viewsOpen',error);
   }
 };
 
