@@ -23,6 +23,10 @@ module.exports = async ({ ack, payload, body, context, ...args }) => {
     });
     console.log("Airtable updated", resultOfAirtableUpdate);
 
+    /*
+    WIP for updating the modal after  change in  status  
+    - currently removes the  accessary on succesful update
+
     const upDatedBlocks = initialView.blocks.map(block => {
       if (block.block_id === affectedBlock) {
           console.log(block)
@@ -31,8 +35,6 @@ module.exports = async ({ ack, payload, body, context, ...args }) => {
       return block;
     });
 
-
-    
 
     const updatedView = {
       type: "modal",
@@ -60,6 +62,9 @@ module.exports = async ({ ack, payload, body, context, ...args }) => {
       .catch(error => console.log(error));
 
     console.log("Modal updated", resultOfModalUpdate.ok);
+    */
+
+
   } catch (error) {
     console.error(error);
   }

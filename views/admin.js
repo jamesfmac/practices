@@ -38,7 +38,7 @@ const admin = async body => {
           type: "button",
           text: {
             type: "plain_text",
-            text: "Log Practices",
+            text: "Update Practices",
             emoji: true
           },
 

@@ -1,6 +1,5 @@
 const moment = require("moment-timezone");
 
-
 module.exports = async practices => {
   const dayBlocks = practices.map(dayGroup => {
     const dateHeading = [
@@ -21,7 +20,6 @@ module.exports = async practices => {
     ];
 
     const practicesList = dayGroup.practices.map(practice => {
-       
       return [
         {
           type: "section",
@@ -63,7 +61,7 @@ module.exports = async practices => {
           elements: [
             {
               type: "mrkdwn",
-              text: `>:ledger: *Project:* ${practice.project}    :arrow_right: *Status:* ${practice.status}`,
+              text: `>:ledger: Project: *${practice.project}*`,
               verbatim: false
             }
           ]
@@ -74,13 +72,27 @@ module.exports = async practices => {
     return [...dateHeading].concat(...practicesList).concat(...divider);
   });
 
-  const blocks = [].concat(...dayBlocks);
+  const altBody = [
+    {
+      type: "section",
+      text: {
+        type: "mrkdwn",
+        text: `*Awesome! You don't have any practices pending.*`,
+        verbatim: false
+      }
+    }
+  ];
+  console.log(dayBlocks.length)
+
+  const body = dayBlocks.length >= 1 ? dayBlocks : altBody;
+
+  const blocks = [].concat(...body);
 
   return {
     type: "modal",
     title: {
       type: "plain_text",
-      text: "Log Practices",
+      text: "Update Practices",
       emoji: true
     },
     close: {

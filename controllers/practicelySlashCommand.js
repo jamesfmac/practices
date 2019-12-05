@@ -1,6 +1,6 @@
 const { getTeamLead } = require("../APIs/airtable");
 const { getUsersInfo } = require("../slack/utils");
-const { admin } = require("../views");
+const { admin, teamLeadCommands } = require("../views");
 const { chatPostEphemeral } = require("../APIs/slack");
 
 const practicelySlashCommand = async ({ body, context, ack, payload, say }) => {
@@ -11,10 +11,11 @@ const practicelySlashCommand = async ({ body, context, ack, payload, say }) => {
   try {
     const practicesUserInfo = await getTeamLead(slackUserInfo.profile.email);
 
-    const responseMessage = await admin(body);
+    const adminResponseMessage = await admin(body);
+    const teamLeadResponseMessage = await teamLeadCommands(body);
 
     if (practicesUserInfo == undefined) {
-        chatPostEphemeral({
+      chatPostEphemeral({
         token: context.botToken,
         user: payload.user_id,
         channel: body.channel_id,
@@ -22,20 +23,20 @@ const practicelySlashCommand = async ({ body, context, ack, payload, say }) => {
         blocks: null
       });
     } else if (practicesUserInfo["Practices Admin"]) {
-        chatPostEphemeral({
+      chatPostEphemeral({
         token: context.botToken,
         user: payload.user_id,
         channel: body.channel_id,
-        text: String(responseMessage.text),
-        blocks: responseMessage.blocks
+        text: String(adminResponseMessage.text),
+        blocks: adminResponseMessage.blocks
       });
     } else {
-        chatPostEphemeral({
+      chatPostEphemeral({
         token: context.botToken,
         user: payload.user_id,
         channel: body.channel_id,
-        text: `Access denied. Sorry, you are not listed as a Practicely admin.`,
-        blocks: null
+        text: teamLeadResponseMessage.text,
+        blocks: teamLeadResponseMessage.blocks
       });
     }
   } catch (error) {
