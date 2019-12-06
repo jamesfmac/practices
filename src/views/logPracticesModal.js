@@ -82,7 +82,7 @@ module.exports = async practices => {
       }
     }
   ];
-  console.log(dayBlocks.length)
+
 
   const body = dayBlocks.length >= 1 ? dayBlocks : altBody;
 
