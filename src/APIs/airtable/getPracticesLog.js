@@ -6,13 +6,24 @@ module.exports = async searchCriteria => {
   const base = require("airtable").base(AIRTABLE_BASE_ID);
   const practices = base("Practices Log");
 
-  const { email, status, afterDate, beforeDate } = searchCriteria;
+  const {
+    email,
+    status,
+    afterDate,
+    beforeDate,
+    maxRecords,
+    sort
+  } = searchCriteria;
 
   const todaysDate = moment().tz(TIMEZONE);
 
+  //setup default values
   const defaultAfterDate = todaysDate.subtract(1, "day").format("YYYY-MM-DD");
   const defaultBeforeDate = todaysDate.add(1, "month").format("YYYY-MM-DD");
+  const defaultSort = [{ field: "Practice Instance ID", direction: "desc" }];
+  const defaultMaxRecords = 100;
 
+  //create search filter
   const afterDateFilter = afterDate
     ? `IS_AFTER(Date,"${afterDate}", "day")`
     : `IS_AFTER(Date,"${defaultAfterDate}", "day")`;
@@ -39,14 +50,15 @@ module.exports = async searchCriteria => {
   const matchingPractices = await practices
     .select({
       view: "All Logged Practices",
-      filterByFormula: finalFilter
+      filterByFormula: finalFilter,
+      maxRecords: maxRecords || defaultMaxRecords,
+      sort: sort || defaultSort
     })
     .all()
     .then(records => {
       return [].concat.apply(
         [],
         records.map(record => {
-       
           return {
             id: record.id,
             fields: record.fields
