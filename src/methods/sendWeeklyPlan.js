@@ -2,69 +2,127 @@ const { AIRTABLE_BASE_ID, TIMEZONE } = require("../../config");
 const moment = require("moment-timezone");
 const { weeklyPlan } = require("../views");
 const { chatPostDM } = require("../APIs/slack");
-const {getPracticesLog} = require("../APIs/airtable")
+const { getPracticesLog } = require("../APIs/airtable");
 
-module.exports = () => {
-  const testData = {
-    dailyPractices: [
-      { practice: "Daily standup", projects: ["MYOB", "ACME", "Squad Red"] }
-    ],
-    week: [
-      {
-        date: "Monday December 12th",
-        practices: [{ practice: "Invoicing", project: "MYOB" }]
-      },
-      {
-        date: "Tuesday December 13th",
-        practices: [
-          { practice: "Steering Co Meeting", project: "MYOB" },
-          { practice: "Sprint Retro", project: "ACME" }
-        ]
-      },
-      {
-        date: "Wednesday December 14th",
-        practices: []
-      },
-      {
-        date: "Thursday December 15th",
-        practices: [{ practice: "Sprint Planning", project: "MYOB" }]
-      },
-      {
-        date: "Friday December 16th",
-        practices: []
-      }
-    ]
-  };
+module.exports = async email => {
 
-  //define date range for the current week 
+  const userEmail = email || null;
+
+  const teamLeadEmailFilter = userEmail
+    ? `Team_Lead_Email="${userEmail}"`
+    : null;
+
+  //define date range for the current week
 
   const date = moment().tz(TIMEZONE);
-  const startOfWeek = date.startOf("isoWeek").subtract(1,'day').format("YYYY-MM-DD");
-  const endOfWeek = date.endOf("isoWeek").add(1,'day').format("YYYY-MM-DD");
 
-  console.log(startOfWeek, endOfWeek);
+  const startOfWeek = date.clone().startOf("isoWeek");
+  const endOfWeek = date.clone().endOf("isoWeek");
 
-  //get practices for that range
+  const startDateForAirTableFilter = startOfWeek
+    .clone()
+    .subtract(1, "day")
+    .format("YYYY-MM-DD");
+  const endDateForAirTableFilter = endOfWeek
+    .clone()
+    .add(1, "day")
+    .format("YYYY-MM-DD");
 
-  const allPractices = getPracticesLog({
-      afterDate: startOfWeek,
-      beforeDate: endOfWeek
-  })
+  const formatPractices = practices => {
+    return practices.map(record => {
+      return {
+        id: record.id,
+        email: record.fields.TEAM_LEAD_EMAIL[0],
+        name: record.fields.PRACTICE_NAME[0],
+        project: record.fields.PROJECT_NAME[0],
+        date: record.fields.Date,
+        status: record.fields.Status,
+        schedule: record.fields._SCHEDULE[0],
+        practiceID: record.fields.ACTIVE_PRACTICE_ID[0]
+      };
+    });
+  };
 
-  
+  const groupPracticesByField = (array, field) => {
+    const uniqueValuesInField = array
+      .map(practice => practice[field])
+      .filter((field, index, all) => all.indexOf(field) === index);
 
-  //Extract list of team leads
+    const groupedPractices = uniqueValuesInField.map(x => {
+      const practices = array.filter(practice => practice[field] === x);
+      return {
+        [field]: x,
+        practices: practices
+      };
+    });
+    return groupedPractices;
+  };    
 
-  //extract daily practices
+  //fetch practices for that range
 
-  //format weekly data
+  const allPractices = await getPracticesLog({
+    email: userEmail,
+    afterDate: startDateForAirTableFilter,
+    beforeDate: endDateForAirTableFilter,
+    sort: [
+      { field: "Team Lead", direction: "desc" },
+      { field: "Date", direction: "asc" }
+    ]
+  });
 
-  //create view
+  const formattedPractices = formatPractices(allPractices);
 
-  const view = weeklyPlan(testData);
+  const practicesGroupedByTeamLead = await groupPracticesByField(
+    formattedPractices,
+    "email"
+  );
 
-  //send message
-  chatPostDM("stratejossandbox@gmail.com", view.text, view.blocks);
+  const practicesFormattedToSend = practicesGroupedByTeamLead.map(group => {
+    const dailyPractices = group.practices.filter(
+      practice => practice.schedule == "Daily"
+    );
+    const uniqueAndFormattedDailyPractices = groupPracticesByField(
+      dailyPractices,
+      "name"
+    ).map(practice => {
+      const projectsPracticeUsedIn = practice.practices.reduce(
+        (total, currentVal) => {
+          return total.includes(currentVal.project)
+            ? total
+            : [...total, currentVal.project];
+        },
+        []
+      );
+      return {
+        name: practice.name,
+        projects: projectsPracticeUsedIn
+      };
+    });
 
- 
+    const practiceCalendar = groupPracticesByField(group.practices, "date").map(
+      day => {
+        const filteredPractices = day.practices.filter(
+          practice => practice.schedule != "Daily"
+        );
+        return {
+          date: day.date,
+          practices: filteredPractices
+        };
+      }
+    );
+
+    return {
+      email: group.email,
+      dailyPractices: uniqueAndFormattedDailyPractices,
+      week: practiceCalendar
+    };
+  });
+
+  for (const message of practicesFormattedToSend) {
+    console.log(`Sending weekly plan to ${message.email}`);
+
+    const view = weeklyPlan(message);
+
+    await chatPostDM(message.email, view.text, view.blocks);
+  }
 };

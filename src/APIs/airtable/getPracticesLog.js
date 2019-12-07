@@ -34,7 +34,7 @@ module.exports = async searchCriteria => {
 
   const emailFilter = email
     ? `TEAM_LEAD_EMAIL="${searchCriteria.email}"`
-    : `TEAM_LEAD_EMAIL=!""`;
+    : `TEAM_LEAD_EMAIL!=""`;
 
   const statusFilter = status
     ? `Status = "${searchCriteria.status}"`
@@ -47,9 +47,9 @@ module.exports = async searchCriteria => {
 
   const finalFilter = `AND(Practice!="", ${combinedFilters})`;
 
+
   const matchingPractices = await practices
     .select({
-      view: "All Logged Practices",
       filterByFormula: finalFilter,
       maxRecords: maxRecords || defaultMaxRecords,
       sort: sort || defaultSort
@@ -70,6 +70,8 @@ module.exports = async searchCriteria => {
       console.log(error);
       return error;
     });
+
+    //ToDO figure out how to normalise practice instance data across the app
 
   return matchingPractices;
 };

@@ -3,11 +3,13 @@ const { app, receiver } = require("./src/bolt");
 
 const {
   scheduleReminders,
-  schedulePracticeGeneration
+  schedulePracticeGeneration,
+  scheduleWeeklyPlan
 } = require("./src/schedules");
 
 scheduleReminders.start();
 schedulePracticeGeneration.start();
+scheduleWeeklyPlan.start()
 
 // TODO swtich cron schedules to be explicitly started
 

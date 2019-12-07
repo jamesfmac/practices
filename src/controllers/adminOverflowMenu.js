@@ -1,5 +1,6 @@
 const { generatePractices, sendWeeklyPlan } = require("../methods");
-module.exports = async ({ body, ack, context, action, payload, say }) => {
+const { usersInfo } = require("../APIs/slack");
+module.exports = async ({ ack, action, payload, body, say }) => {
   try {
     ack();
     const selectedMenuOption = action.selected_option.value;
@@ -11,7 +12,8 @@ module.exports = async ({ body, ack, context, action, payload, say }) => {
         say("Whoops you caught me before I was ready. Stats are coming soon.");
         break;
       case "send_weekly_plan":
-        sendWeeklyPlan();
+        const slackUserInfo = await usersInfo(body.user.id);
+        sendWeeklyPlan(slackUserInfo.profile.email);
         break;
       default:
         return;

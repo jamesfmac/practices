@@ -9,7 +9,7 @@ const getTeamLead = async userEmail => {
     return teamLeads
       .select({
         // Selecting the first 3 records in Grid view:
-        view: "Grid view",
+      
         filterByFormula: lookupFormula
       })
       .all()

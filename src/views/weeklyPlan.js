@@ -1,3 +1,5 @@
+const moment = require("moment-timezone");
+
 module.exports = (data, body) => {
   const text = `These are your practices for the week`;
 
@@ -13,6 +15,8 @@ module.exports = (data, body) => {
   ];
 
   const dailyPracticesBlock = data.dailyPractices.map(practice => {
+
+    console.log(practice)
     const projectList = practice.projects.join(" | ");
 
     return [
@@ -20,7 +24,7 @@ module.exports = (data, body) => {
         type: "section",
         text: {
           type: "mrkdwn",
-          text: `*${practice.practice}*`,
+          text: `*${practice.name}s*`,
           verbatim: false
         }
       },
@@ -46,7 +50,7 @@ module.exports = (data, body) => {
         type: "section",
         text: {
           type: "mrkdwn",
-          text: `*${day.date}*`,
+          text: `*${moment(day.date).format("dddd, Do MMM")}*`,
           verbatim: false
         }
       }
@@ -59,7 +63,7 @@ module.exports = (data, body) => {
           type: "section",
           text: {
             type: "mrkdwn",
-            text: `${practice.practice}`,
+            text: `${practice.name}`,
             verbatim: false
           }
         },

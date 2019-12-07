@@ -88,7 +88,7 @@ const admin = async body => {
             {
               text: {
                 type: "plain_text",
-                text: "Send Weekly Plan",
+                text: "My Weekly Plan",
                 emoji: true
               },
               value: "send_weekly_plan"
