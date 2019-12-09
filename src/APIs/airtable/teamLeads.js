@@ -20,7 +20,7 @@ const getTeamLead = async userEmail => {
       })
       .catch(error => {
         console.log(error);
-        return;
+        return error;
       });
   } catch (error) {
     console.log(error);

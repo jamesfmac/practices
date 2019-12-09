@@ -8,5 +8,7 @@ module.exports = {
   generatePractices: require("./generatePractices"),
   sendReminders: require("./sendReminders"),
   showHelp: require("./showHelp"),
-  adminOverflowMenu: require("./adminOverflowMenu")
+  adminOverflowMenu: require("./adminOverflowMenu"),
+  updateStatusButtonComplete: require("./updateStatusButtonComplete"),
+  updateStatusButtonMissed: require("./updateStatusButtonMissed")
 };

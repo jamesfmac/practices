@@ -13,12 +13,6 @@ module.exports = async practices => {
       }
     ];
 
-    const divider = [
-      {
-        type: "divider"
-      }
-    ];
-
     const practicesList = dayGroup.practices.map(practice => {
       return [
         {
@@ -27,33 +21,6 @@ module.exports = async practices => {
             type: "mrkdwn",
             text: `${practice.practice}`,
             verbatim: false
-          },
-          accessory: {
-            type: "static_select",
-            action_id: "setPracticeStatusFromModal",
-            placeholder: {
-              type: "plain_text",
-              text: "Status",
-              emoji: true
-            },
-            options: [
-              {
-                text: {
-                  type: "plain_text",
-                  text: "Completed",
-                  emoji: true
-                },
-                value: `${practice.id}-completed`
-              },
-              {
-                text: {
-                  type: "plain_text",
-                  text: "Missed",
-                  emoji: true
-                },
-                value: `${practice.id}-missed`
-              }
-            ]
           }
         },
         {
@@ -61,15 +28,46 @@ module.exports = async practices => {
           elements: [
             {
               type: "mrkdwn",
-              text: `>:ledger: Project: *${practice.project}*`,
+              text: `>*Project* ${practice.project}`,
               verbatim: false
+            },
+            {
+              type: "mrkdwn",
+              text: `*Status* Pending`,
+              verbatim: false
+            }
+          ]
+        },
+        {
+          type: "actions",
+          elements: [
+            {
+              type: "button",
+              text: {
+                type: "plain_text",
+                text: "Completed ",
+                emoji: true
+              },
+              action_id: 'updateStatusButtonComplete',
+              value: `${practice.id}`,
+              style: "primary"
+            },
+            {
+              type: "button",
+              text: {
+                type: "plain_text",
+                text: "Missed",
+                emoji: true
+              },
+              action_id: 'updateStatusButtonMissed',
+              value: `${practice.id}`
             }
           ]
         }
       ];
     });
 
-    return [...dateHeading].concat(...practicesList).concat(...divider);
+    return [...dateHeading].concat(...practicesList);
   });
 
   const altBody = [
@@ -77,12 +75,11 @@ module.exports = async practices => {
       type: "section",
       text: {
         type: "mrkdwn",
-        text: `*Awesome! You don't have any practices pending.*`,
+        text: `*Awesome! You don't have any practices that need updating.*`,
         verbatim: false
       }
     }
   ];
-
 
   const body = dayBlocks.length >= 1 ? dayBlocks : altBody;
 
@@ -97,7 +94,7 @@ module.exports = async practices => {
     },
     close: {
       type: "plain_text",
-      text: "Close",
+      text: "Finished",
       emoji: true
     },
     blocks: blocks

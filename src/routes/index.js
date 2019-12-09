@@ -9,7 +9,9 @@ const {
   submitFeedbackModal,
   showLogPracticesModal,
   setPracticeStatusFromModal,
-  sendWeeklyPlan
+  sendWeeklyPlan,
+  updateStatusButtonComplete,
+  updateStatusButtonMissed
 } = require("../controllers");
 
 module.exports = function(app) {
@@ -30,6 +32,10 @@ module.exports = function(app) {
   app.action("select_practice_status", selectPracticeStatus);
 
   app.action("setPracticeStatusFromModal", setPracticeStatusFromModal);
+
+  app.action("updateStatusButtonComplete", updateStatusButtonComplete);
+  
+  app.action("updateStatusButtonMissed", updateStatusButtonMissed)
 
   app.view("feedback", submitFeedbackModal);
   app.action("send_weekly_plan", sendWeeklyPlan);

@@ -55,18 +55,22 @@ const insertPractices = (practicesToApply, date) => {
 
 const getPracticesByDate = async date => {
   const practices = base("Practices Log");
-  const todaysPractices = practices
-    .select({
-      filterByFormula: `IS_SAME(Date, "${date}", "day" )`
+  const todaysPractices = practices.select({
+    filterByFormula: `IS_SAME(Date, "${date}", "day" )`
+  });
+
+  return todaysPractices
+    .all()
+    .then(records => {
+      return [].concat.apply(
+        [],
+        records.map(record => record.get("Active Practice ID"))
+      );
     })
-    
-  return todaysPractices.all().then(records => {
-    return [].concat.apply(
-      [],
-      records.map(record => record.get("Active Practice ID"))
-    );
-  })
-  .catch(error => console.log(error));
+    .catch(error => {
+      console.log(error);
+      return error;
+    });
 };
 
 module.exports = {
