@@ -3,5 +3,6 @@ module.exports = {
   chatUpdate: require("./chatUpdate"),
   viewsOpen: require("./viewsOpen"),
   usersInfo: require("./usersInfo"),
-  chatPostDM: require ("./chatPostDM")
+  chatPostDM: require ("./chatPostDM"),
+  usersLookupByEmail: require("./usersLookupByEmail")
 };

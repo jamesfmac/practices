@@ -3,5 +3,6 @@ module.exports = {
   admin: require("./admin"),
   feedbackModal: require("./feedbackModal"),
   logPracticesModal: require("./logPracticesModal"),
-  teamLeadCommands: require("./teamLeadCommands")
+  teamLeadCommands: require("./teamLeadCommands"),
+  weeklyPlan: require("./weeklyPlan")
 };

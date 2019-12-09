@@ -1,4 +1,5 @@
 module.exports = {
   generatePractices: require("./generatePractices"),
-  sendReminders: require("./sendReminders")
+  sendReminders: require("./sendReminders"),
+  sendWeeklyPlan: require("./sendWeeklyPlan")
 };
