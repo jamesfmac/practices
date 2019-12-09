@@ -4,5 +4,6 @@ module.exports = {
   viewsOpen: require("./viewsOpen"),
   usersInfo: require("./usersInfo"),
   chatPostDM: require ("./chatPostDM"),
-  usersLookupByEmail: require("./usersLookupByEmail")
+  usersLookupByEmail: require("./usersLookupByEmail"),
+  viewsUpdate: require("./viewsUpdate")
 };

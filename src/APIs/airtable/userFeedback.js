@@ -21,6 +21,7 @@ const insertFeedback = async (user, improvement, other) => {
       });
   } catch (error) {
     console.log(error);
+    return error
   }
 };
 

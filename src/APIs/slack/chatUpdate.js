@@ -7,5 +7,10 @@ module.exports = messageUpdate => {
     text: messageUpdate.text,
     as_user: true,
     blocks: messageUpdate.blocks
-  });
+  })
+  .then(response => response)
+  .catch(error =>{
+    console.log('chat.update', error)
+    return error
+  })
 };
