@@ -11,7 +11,7 @@ const admin = async body => {
     }
   ];
 
-  const confirmObject = {
+  const confirmSendReminder = {
     title: {
       type: "plain_text",
       text: "Are you sure?"
@@ -54,7 +54,7 @@ const admin = async body => {
           },
           action_id: "remind_all",
           style: "danger",
-          confirm: confirmObject
+          confirm: confirmSendReminder
         },
         {
           type: "button",
@@ -84,6 +84,14 @@ const admin = async body => {
                 emoji: true
               },
               value: "show_stats"
+            },
+            {
+              text: {
+                type: "plain_text",
+                text: "Send Weekly Plans",
+                emoji: true
+              },
+              value: "send_weekly_plan"
             }
           ]
         }
@@ -91,6 +99,7 @@ const admin = async body => {
     }
   ];
 
+  
   const blocks = [...intro].concat(...actions);
 
   return { text: text, blocks: blocks };

@@ -1,15 +1,7 @@
 module.exports = async body => {
   const text = `Hey <@${body.user_id}>`;
 
-  const intro = [
-    {
-      type: "section",
-      text: {
-        type: "mrkdwn",
-        text: `:zap:`
-      }
-    }
-  ];
+
 
   const actions = [
     {
@@ -40,7 +32,7 @@ module.exports = async body => {
     }
   ];
 
-  const blocks = [...intro].concat(...actions);
+  const blocks = [...actions];
 
   return { text: text, blocks: blocks };
 };

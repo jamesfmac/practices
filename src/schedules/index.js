@@ -1,7 +1,7 @@
 const CronJob = require("cron").CronJob;
 const { TIMEZONE } = require("../../config");
 
-const { generatePractices, sendReminders } = require("../methods");
+const { generatePractices, sendReminders, sendWeeklyPlan } = require("../methods");
 
 const scheduleReminders = new CronJob(
   "00 15 16 * * 1-5",
@@ -13,6 +13,7 @@ const scheduleReminders = new CronJob(
   TIMEZONE
 );
 
+
 const schedulePracticeGeneration = new CronJob(
   "00 */10 * * *  1-5",
   () => {
@@ -23,7 +24,19 @@ const schedulePracticeGeneration = new CronJob(
   TIMEZONE
 );
 
+const scheduleWeeklyPlan = new CronJob(
+  "00 25 09 * * 1",
+  () => {
+    sendWeeklyPlan();
+  },
+  null,
+  false,
+  TIMEZONE
+);
+
+
 module.exports = {
   scheduleReminders,
-  schedulePracticeGeneration
+  schedulePracticeGeneration,
+  scheduleWeeklyPlan
 };
