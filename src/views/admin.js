@@ -11,7 +11,7 @@ const admin = async body => {
     }
   ];
 
-  const confirmObject = {
+  const confirmSendReminder = {
     title: {
       type: "plain_text",
       text: "Are you sure?"
@@ -54,7 +54,7 @@ const admin = async body => {
           },
           action_id: "remind_all",
           style: "danger",
-          confirm: confirmObject
+          confirm: confirmSendReminder
         },
         {
           type: "button",
@@ -88,7 +88,7 @@ const admin = async body => {
             {
               text: {
                 type: "plain_text",
-                text: "My Weekly Plan",
+                text: "Send Weekly Plans",
                 emoji: true
               },
               value: "send_weekly_plan"

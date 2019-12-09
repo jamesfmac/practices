@@ -13,7 +13,7 @@ module.exports = async ({ ack, action, payload, body, say }) => {
         break;
       case "send_weekly_plan":
         const slackUserInfo = await usersInfo(body.user.id);
-        sendWeeklyPlan(slackUserInfo.profile.email);
+        sendWeeklyPlan();
         break;
       default:
         return;

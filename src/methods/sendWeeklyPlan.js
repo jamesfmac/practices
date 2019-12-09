@@ -1,11 +1,10 @@
 const { AIRTABLE_BASE_ID, TIMEZONE } = require("../../config");
 const moment = require("moment-timezone");
 const { weeklyPlan } = require("../views");
-const { chatPostDM } = require("../APIs/slack");
+const { chatPostDM, usersLookupByEmail } = require("../APIs/slack");
 const { getPracticesLog } = require("../APIs/airtable");
 
 module.exports = async email => {
-
   const userEmail = email || null;
 
   const teamLeadEmailFilter = userEmail
@@ -56,7 +55,7 @@ module.exports = async email => {
       };
     });
     return groupedPractices;
-  };    
+  };
 
   //fetch practices for that range
 
@@ -77,7 +76,16 @@ module.exports = async email => {
     "email"
   );
 
-  const practicesFormattedToSend = practicesGroupedByTeamLead.map(group => {
+  const promises = practicesGroupedByTeamLead.map(async group => {
+
+    const slackUser = await usersLookupByEmail(group.email);
+
+    const slackUserID = slackUser.ok? slackUser.user.id : null
+
+    console.log('slackUser', slackUserID)
+
+   
+
     const dailyPractices = group.practices.filter(
       practice => practice.schedule == "Daily"
     );
@@ -113,16 +121,17 @@ module.exports = async email => {
 
     return {
       email: group.email,
+      slackID: slackUserID,
       dailyPractices: uniqueAndFormattedDailyPractices,
       week: practiceCalendar
     };
   });
 
+  const practicesFormattedToSend = await Promise.all(promises);
+
   for (const message of practicesFormattedToSend) {
     console.log(`Sending weekly plan to ${message.email}`);
-
     const view = weeklyPlan(message);
-
     await chatPostDM(message.email, view.text, view.blocks);
   }
 };
