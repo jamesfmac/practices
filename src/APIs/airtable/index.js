@@ -1,5 +1,5 @@
 module.exports = {
-  getTeamLead: require("./teamLeads"),
+  getTeamLeads: require("./getTeamLeads"),
   insertFeedback: require("./userFeedback"),
   getPracticesLog: require("./getPracticesLog")
 };
