@@ -29,6 +29,7 @@ module.exports = async ({ ack, body, view, context, payload }) => {
       //update the modal view if the airtable update is succesful
       const updatedBlocks = await initialView.blocks.map((block, index) => {
         if (index === indexOfActionedPractice) {
+          block.elements[0].text.text = `Completed`;
           block.elements[1].text.text = `:white_check_mark: ${newStatus}`;
           return { type: block.type, elements: block.elements };
         } else if (index === indexOfActionedPractice - 1) {

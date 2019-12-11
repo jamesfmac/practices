@@ -1,10 +1,23 @@
 module.exports = (slackUserID, appliedPracticesGroupedByProject) => {
   const actions = [
     {
-      type: "image",
-      image_url:
-        "https://www.jetchill.com/wp-content/uploads/2017/05/blog-header-background.jpg",
-      alt_text: "image1"
+      type: "section",
+      text: {
+        type: "mrkdwn",
+        text: "*Dashboard*"
+      },
+      accessory: {
+        type: "button",
+        text: {
+          type: "plain_text",
+          text: "App Settings",
+          emoji: true
+        },
+        value: "click_me_123"
+      }
+    },
+    {
+      type: "divider"
     },
     {
       type: "actions",
@@ -24,7 +37,16 @@ module.exports = (slackUserID, appliedPracticesGroupedByProject) => {
           type: "button",
           text: {
             type: "plain_text",
-            text: "Provide Feedback ",
+            text: "Show Week",
+            emoji: true
+          },
+          action_id: "openWeekyPLan"
+        },
+        {
+          type: "button",
+          text: {
+            type: "plain_text",
+            text: ":postbox: Feedback",
             emoji: true
           },
           action_id: "open_feedback_form",
@@ -39,8 +61,11 @@ module.exports = (slackUserID, appliedPracticesGroupedByProject) => {
       type: "section",
       text: {
         type: "mrkdwn",
-        text: "*Your Active Projects*"
+        text: "*Active Projects*"
       }
+    },
+    {
+      type: "divider"
     }
   ];
 
@@ -50,7 +75,7 @@ module.exports = (slackUserID, appliedPracticesGroupedByProject) => {
         type: "section",
         text: {
           type: "mrkdwn",
-          text: `*${project.project}*`
+          text: `${project.project}`
         }
       }
     ];
@@ -75,7 +100,7 @@ module.exports = (slackUserID, appliedPracticesGroupedByProject) => {
       }
     ];
 
-    return [...projectTitle].concat(...activePractices)
+    return [...projectTitle].concat(...activePractices);
   });
 
   const combinedBlocks = [...actions]

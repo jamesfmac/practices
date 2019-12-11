@@ -1,15 +1,17 @@
 const { TIMEZONE } = require("../../config");
 const moment = require("moment-timezone");
 const { weeklyPlan } = require("../views");
-const { chatPostDM, usersLookupByEmail } = require("../APIs/slack");
+const { viewsOpen, usersInfo } = require("../APIs/slack");
 const { getPracticesLog } = require("../APIs/airtable");
 
-module.exports = async email => {
-  const userEmail = email || null;
+module.exports = async ({ body, context, ack }) => {
+  ack();
 
-  const teamLeadEmailFilter = userEmail
-    ? `Team_Lead_Email="${userEmail}"`
-    : null;
+  console.log(context);
+  //get the user details
+  const slackUserID = body.user.id;
+  const slackUserInfo = await usersInfo(slackUserID);
+  const userEmail = slackUserInfo.profile.email || null;
 
   //define date range for the current week
 
@@ -26,6 +28,8 @@ module.exports = async email => {
     .clone()
     .add(1, "day")
     .format("YYYY-MM-DD");
+
+  //helper functions
 
   const formatPractices = practices => {
     return practices.map(record => {
@@ -57,7 +61,7 @@ module.exports = async email => {
     return groupedPractices;
   };
 
-  //fetch practices for that range
+  //fetch practices for the week
 
   const allPractices = await getPracticesLog({
     email: userEmail,
@@ -69,7 +73,7 @@ module.exports = async email => {
     ]
   });
 
-  const formattedPractices = formatPractices(allPractices);
+  const formattedPractices = await formatPractices(allPractices);
 
   const practicesGroupedByTeamLead = await groupPracticesByField(
     formattedPractices,
@@ -77,12 +81,6 @@ module.exports = async email => {
   );
 
   const promises = practicesGroupedByTeamLead.map(async group => {
-    const slackUser = await usersLookupByEmail(group.email);
-
-    const slackUserID = slackUser.ok ? slackUser.user.id : null;
-
-    console.log("slackUser", slackUserID);
-
     const dailyPractices = group.practices.filter(
       practice => practice.schedule == "Daily"
     );
@@ -126,9 +124,13 @@ module.exports = async email => {
 
   const practicesFormattedToSend = await Promise.all(promises);
 
-  for (const message of practicesFormattedToSend) {
-    console.log(`Sending weekly plan to ${message.email}`);
-    const view = weeklyPlan(message);
-    await chatPostDM(message.email, view.text, view.blocks);
-  }
+  const view = weeklyPlan(practicesFormattedToSend[0], true);
+
+  console.log(practicesFormattedToSend);
+
+  viewsOpen({
+    token: context.botToken,
+    trigger_id: body.trigger_id,
+    view: view
+  });
 };
