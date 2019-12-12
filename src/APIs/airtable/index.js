@@ -3,5 +3,6 @@ module.exports = {
   insertFeedback: require("./userFeedback"),
   getPracticesLog: require("./getPracticesLog"),
   getAppliedPractices: require("./getAppliedPractices"),
-  getProjects: require("./getProjects")
+  getProjects: require("./getProjects"),
+  updateTeamLeads: require("./updateTeamLeads")
 };

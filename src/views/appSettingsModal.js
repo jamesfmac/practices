@@ -37,6 +37,7 @@ module.exports = async userSettings => {
       text: "Cancel",
       emoji: true
     },
+    private_metadata: `${userSettings.id}`, 
     blocks: [
       {
         type: "input",

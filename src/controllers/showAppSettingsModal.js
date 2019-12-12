@@ -21,13 +21,8 @@ module.exports = async ({ body, context, say, payload, ack, event }) => {
             sendDailyReminders: record.fields["Send Daily Reminder"]
         }
     })
-
-    console.log(formattedSettings)
  
-
     const view = await appSettingsModal(formattedSettings[0]);
-
- 
 
     viewsOpen({
       token: context.botToken,
