@@ -13,7 +13,9 @@ const {
   updateStatusButtonComplete,
   updateStatusButtonMissed,
   appHomeOpened,
-  showWeeklyPlanModal
+  showWeeklyPlanModal,
+  showAppSettingsModal,
+  submitAppSettingsModal
 } = require("../controllers");
 
 module.exports = function(app) {
@@ -46,5 +48,9 @@ module.exports = function(app) {
   app.event("app_home_opened", appHomeOpened);
 
   app.action("openWeekyPLan", showWeeklyPlanModal )
+
+  app.action("showAppSettingsModal", showAppSettingsModal)
+  
+  app.view ("submitAppSettingsModal", submitAppSettingsModal)
 
 };

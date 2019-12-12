@@ -16,7 +16,7 @@ module.exports = async ({ ack, body, view, context, payload }) => {
     );
     const newStatus = "Missed";
 
-    console.log(initialView);
+  
 
     const resultOfAirtableUpdate = await updatePracticesLog({
       id: recordID,

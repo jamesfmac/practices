@@ -1,6 +1,6 @@
 module.exports = (slackUserID, appliedPracticesGroupedByProject, projects) => {
 
-  console.log(projects)
+ 
   const heading = [
     {
       type: "section",
@@ -15,7 +15,7 @@ module.exports = (slackUserID, appliedPracticesGroupedByProject, projects) => {
           text: "App Settings",
           emoji: true
         },
-        value: "click_me_123"
+        action_id: "showAppSettingsModal"
       }
     },
     {

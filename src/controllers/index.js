@@ -13,6 +13,8 @@ module.exports = {
   updateStatusButtonMissed: require("./updateStatusButtonMissed"),
   refreshHome: require("./refreshHome"),
   appHomeOpened: require("./appHomeOpened"),
-  showWeeklyPlanModal: require("./showWeeklyPlanModal")
+  showWeeklyPlanModal: require("./showWeeklyPlanModal"),
+  showAppSettingsModal: require("./showAppSettingsModal"),
+  submitAppSettingsModal: require("./submitAppSettingsModal")
   
 };
