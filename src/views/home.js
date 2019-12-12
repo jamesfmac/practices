@@ -1,5 +1,7 @@
-module.exports = (slackUserID, appliedPracticesGroupedByProject) => {
-  const actions = [
+module.exports = (slackUserID, appliedPracticesGroupedByProject, projects) => {
+
+  console.log(projects)
+  const heading = [
     {
       type: "section",
       text: {
@@ -18,7 +20,10 @@ module.exports = (slackUserID, appliedPracticesGroupedByProject) => {
     },
     {
       type: "divider"
-    },
+    }
+  ];
+
+  const actions = [
     {
       type: "actions",
       elements: [
@@ -56,12 +61,33 @@ module.exports = (slackUserID, appliedPracticesGroupedByProject) => {
     }
   ];
 
+  const projectStats = projects.map(project => {
+    return [
+      {
+        type: "section",
+        text: {
+          type: "mrkdwn",
+          text: `${project.name}`
+        }
+      },
+      {
+        type: "context",
+        elements: [
+          {
+            type: "mrkdwn",
+            text: `>${project.performanceLevel} (${project.percentage})`
+          }
+        ]
+      }
+    ];
+  });
+
   const activeProjectsHeading = [
     {
       type: "section",
       text: {
         type: "mrkdwn",
-        text: "*Active Projects*"
+        text: "*Project Settings*"
       }
     },
     {
@@ -69,7 +95,7 @@ module.exports = (slackUserID, appliedPracticesGroupedByProject) => {
     }
   ];
 
-  const activeProjecst = appliedPracticesGroupedByProject.map(project => {
+  const activeProjects = appliedPracticesGroupedByProject.map(project => {
     const projectTitle = [
       {
         type: "section",
@@ -83,7 +109,7 @@ module.exports = (slackUserID, appliedPracticesGroupedByProject) => {
     const practicesContextArray = project.practices.map(practice => {
       return {
         type: "mrkdwn",
-        text: `><fakelink.com|${practice.name}>\n> ${practice.schedule}`
+        text: `>*${practice.name}*\n> ${practice.schedule}`
       };
     });
 
@@ -103,9 +129,12 @@ module.exports = (slackUserID, appliedPracticesGroupedByProject) => {
     return [...projectTitle].concat(...activePractices);
   });
 
-  const combinedBlocks = [...actions]
+  const combinedBlocks = []
+    .concat(...heading)
+    .concat(...projectStats)
+    .concat(...actions)
     .concat(...activeProjectsHeading)
-    .concat(...activeProjecst);
+    .concat(...activeProjects);
 
   return { blocks: combinedBlocks };
 };

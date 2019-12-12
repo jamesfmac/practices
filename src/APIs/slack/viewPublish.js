@@ -1,7 +1,6 @@
 const { app } = require("../../bolt");
 
 module.exports = view => {
-  console.log(view);
   app.client.views
     .publish({
       token: view.token,
