@@ -1,5 +1,8 @@
 module.exports = {
   getTeamLeads: require("./getTeamLeads"),
   insertFeedback: require("./userFeedback"),
-  getPracticesLog: require("./getPracticesLog")
+  getPracticesLog: require("./getPracticesLog"),
+  getAppliedPractices: require("./getAppliedPractices"),
+  getProjects: require("./getProjects"),
+  updateTeamLeads: require("./updateTeamLeads")
 };

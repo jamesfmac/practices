@@ -10,5 +10,11 @@ module.exports = {
   showHelp: require("./showHelp"),
   adminOverflowMenu: require("./adminOverflowMenu"),
   updateStatusButtonComplete: require("./updateStatusButtonComplete"),
-  updateStatusButtonMissed: require("./updateStatusButtonMissed")
+  updateStatusButtonMissed: require("./updateStatusButtonMissed"),
+  refreshHome: require("./refreshHome"),
+  appHomeOpened: require("./appHomeOpened"),
+  showWeeklyPlanModal: require("./showWeeklyPlanModal"),
+  showAppSettingsModal: require("./showAppSettingsModal"),
+  submitAppSettingsModal: require("./submitAppSettingsModal")
+  
 };

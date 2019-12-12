@@ -1,38 +1,56 @@
 const moment = require("moment-timezone");
 
-module.exports = (data) => {
+module.exports = (data, isForModal) => {
+  console.log(data.dailyPractices);
+
   const text = `Your practices for the week`;
+
+  const introText = isForModal
+    ? `These are your planned practices for the week`
+    : `Hey <@${data.slackID}> these are your planned practices for the week.`;
 
   const introBlock = [
     {
       type: "section",
       text: {
         type: "mrkdwn",
-        text: `Hey <@${data.slackID}> these are your planned practices for the week.`
+        text: introText
       }
-    },
+    }
+  ];
 
+  const dailyPracticesHeading = [
     {
       type: "section",
       text: {
         type: "mrkdwn",
-        text: "Daily Practices",
+        text: "*Daily Practices*",
         verbatim: false
       }
     }
   ];
 
   const dailyPracticesBlock = data.dailyPractices.map(practice => {
-    const projectList = practice.projects.join(" | ");
+    const projectList = practice.projects.join(", ");
 
     return [
       {
         type: "section",
         text: {
           type: "mrkdwn",
-          text: `>*${practice.name}s* \n>${projectList}`,
+          text: `${practice.name}s`,
           verbatim: false
         }
+      },
+      {
+        type: "context",
+        elements: [
+          {
+            type: "mrkdwn",
+            text: `*Projects:* ${projectList}`,
+            verbatim: false
+          }
+        ]
       }
     ];
   });
@@ -45,7 +63,7 @@ module.exports = (data) => {
       type: "section",
       text: {
         type: "mrkdwn",
-        text: `Weekly Practices`,
+        text: `*Weekly Practices*`,
         verbatim: false
       }
     }
@@ -56,12 +74,14 @@ module.exports = (data) => {
     .map(day => {
       const dayHeading = [
         {
-          type: "section",
-          text: {
-            type: "mrkdwn",
-            text: `${moment(day.date).format("dddd, Do MMM")}`,
-            verbatim: false
-          }
+          type: "context",
+          elements: [
+            {
+              type: "mrkdwn",
+              text: `:calendar: ${moment(day.date).format("dddd, Do MMM")}`,
+              verbatim: false
+            }
+          ]
         }
       ];
 
@@ -71,9 +91,19 @@ module.exports = (data) => {
             type: "section",
             text: {
               type: "mrkdwn",
-              text: `>*${practice.name}*\n>${practice.project}`,
+              text: `${practice.name}`,
               verbatim: false
             }
+          },
+          {
+            type: "context",
+            elements: [
+              {
+                type: "mrkdwn",
+                text: `\n>${practice.project} `,
+                verbatim: false
+              }
+            ]
           }
         ];
       });
@@ -106,11 +136,35 @@ module.exports = (data) => {
     }
   ];
 
-  const blocks = [...introBlock]
-    .concat(...dailyPracticesBlock)
-    .concat(...weekHeaderBlock)
-    .concat(...dayOfWeekBlock)
-    .concat(...footer);
+  if (isForModal) {
+    return {
+      type: "modal",
+      title: {
+        type: "plain_text",
+        text: `Your Week`,
+        emoji: true
+      },
+      close: {
+        type: "plain_text",
+        text: "Close",
+        emoji: true
+      },
 
-  return { text: text, blocks: blocks };
+      blocks: []
+    
+        .concat(...dailyPracticesBlock)
+        .concat(...weekHeaderBlock)
+        .concat(...dayOfWeekBlock)
+    };
+  }
+
+  return {
+    text: text,
+    blocks: [...introBlock]
+      .concat(...dailyPracticesHeading)
+      .concat(...dailyPracticesBlock)
+      .concat(...weekHeaderBlock)
+      .concat(...dayOfWeekBlock)
+      .concat(...footer)
+  };
 };
