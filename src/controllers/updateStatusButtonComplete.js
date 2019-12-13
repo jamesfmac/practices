@@ -30,6 +30,7 @@ module.exports = async ({ ack, body, view, context, payload }) => {
       const updatedBlocks = await initialView.blocks.map((block, index) => {
         if (index === indexOfActionedPractice) {
           block.elements[0].text.text = `:white_check_mark: ${newStatus}`;
+          block.elements[1].text.text = `Missed`;
           return { type: block.type, elements: block.elements };
         } else if (index === indexOfActionedPractice - 1) {
           block.elements[1].text = `*Status* ${newStatus}`;

@@ -3,6 +3,7 @@ const base = require("airtable").base(AIRTABLE_BASE_ID);
 const moment = require("moment-timezone");
 
 const { chatPostDM } = require("../APIs/slack");
+const { getPracticesLog, getTeamLeads } = require("../APIs/airtable");
 
 const { practicesReminderInline } = require("../views");
 
@@ -47,43 +48,42 @@ const createAndDispatchSlackDMs = async groupedPractices => {
 const sendReminders = async email => {
   try {
     //Set up the dates that we need to find the practices due today
-
     const userEmail = email || null;
-
     if (userEmail) {
       console.log(`Checking practice reminders for ${userEmail}`);
     } else {
       console.log("Checking practice reminders for all team leads");
     }
 
-    const teamLeadEmailFilter = userEmail
-      ? `Team_Lead_Email="${userEmail}"`
-      : `Team_Lead_Email!=""`;
-
     const date = moment().tz(TIMEZONE);
-    const dateFormattedForAirtable = date.format("YYYY-MM-DD");
 
-    const practices = base("Practices Log");
+    const teamLeadsWantingReminders = await getTeamLeads().then(records =>
+      records
+        .filter(record => record.get("Send Daily Reminder"))
+        .map(record => {
+          return record.get("Email Address");
+        })
+    );
 
-    const lookupFormula = `AND(IS_SAME(Date,"${dateFormattedForAirtable}", 'day' ), Status = 'Pending', ${teamLeadEmailFilter})`;
+    console.log(teamLeadsWantingReminders);
 
     //get a list of the practices due today, group them by team lead email and shape data
 
-    const todaysPractices = await practices
-      .select({
-        view: "All Logged Practices",
-        filterByFormula: lookupFormula
-      })
-      .firstPage()
-      .then(records => {
-        return [].concat.apply(
-          [],
-          records.map(record => record)
-        );
-      });
+    const todaysPractices = await getPracticesLog({
+      afterDate: date.clone().subtract(1, "day"),
+      beforeDate: date.clone().add(1, "day"),
+      status: "Pending",
+      email: userEmail
+    });
+
+    const practicesNeedingReminding = todaysPractices.filter(practice => {
+      return teamLeadsWantingReminders.includes(
+        practice.fields["TEAM_LEAD_EMAIL"][0]
+      );
+    });
 
     const listOfTeamLeadsWithPracticesDue = getListOfUniqueTeamLeads(
-      todaysPractices
+      practicesNeedingReminding
     );
     console.log(
       `Pending practices found for: ${listOfTeamLeadsWithPracticesDue}`

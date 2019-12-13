@@ -1,23 +1,19 @@
 const { AIRTABLE_BASE_ID } = require("../../../config");
 const base = require("airtable").base(AIRTABLE_BASE_ID);
 
-const getTeamLead = async userEmail => {
+module.exports = async email => {
   try {
-    const lookupFormula = `{Email Address}="${userEmail}"`;
+    const emailFilter = email
+      ? `{Email Address}="${email}"`
+      : `{Email Address}!=""`;
 
     const teamLeads = base("Team Leads");
     return teamLeads
       .select({
-        // Selecting the first 3 records in Grid view:
-      
-        filterByFormula: lookupFormula
+        filterByFormula: emailFilter
       })
       .all()
-      .then(records => {
-        return records[0].fields;
-
-        return null, records[0].fields;
-      })
+      .then(records => records)
       .catch(error => {
         console.log(error);
         return error;
@@ -27,5 +23,3 @@ const getTeamLead = async userEmail => {
     throw error;
   }
 };
-
-module.exports = getTeamLead;

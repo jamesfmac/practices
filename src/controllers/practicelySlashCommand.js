@@ -1,4 +1,4 @@
-const { getTeamLead } = require("../APIs/airtable");
+const { getTeamLeads } = require("../APIs/airtable");
 const { admin, teamLeadCommands } = require("../views");
 const { chatPostEphemeral, usersInfo } = require("../APIs/slack");
 
@@ -8,7 +8,9 @@ const practicelySlashCommand = async ({ body, context, ack, payload, say }) => {
   ack();
   const slackUserInfo = await usersInfo(payload.user_id);
   try {
-    const practicesUserInfo = await getTeamLead(slackUserInfo.profile.email);
+    const practicesUserInfo = await getTeamLeads(slackUserInfo.profile.email);
+    const isAdmin = practicesUserInfo[0].get("Practices Admin")
+
 
     const adminResponseMessage = await admin(body);
     const teamLeadResponseMessage = await teamLeadCommands(body);
@@ -21,7 +23,7 @@ const practicelySlashCommand = async ({ body, context, ack, payload, say }) => {
         text: `Sorry I couldn't find a user account for you`,
         blocks: null
       });
-    } else if (practicesUserInfo["Practices Admin"]) {
+    } else if (isAdmin) {
       chatPostEphemeral({
         token: context.botToken,
         user: payload.user_id,

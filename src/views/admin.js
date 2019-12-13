@@ -18,7 +18,8 @@ const admin = async body => {
     },
     text: {
       type: "mrkdwn",
-      text: "This will message all team leads with asking them to update their pending practices for  today"
+      text:
+        "This will message all team leads with asking them to update their pending practices for  today"
     },
     confirm: {
       type: "plain_text",
@@ -49,7 +50,17 @@ const admin = async body => {
           type: "button",
           text: {
             type: "plain_text",
-            text: "Remind All",
+            text: "Show Week",
+            emoji: true
+          },
+          action_id: "openWeekyPLan"
+        },
+
+        {
+          type: "button",
+          text: {
+            type: "plain_text",
+            text: "Send Reminders",
             emoji: true
           },
           action_id: "remind_all",
@@ -60,10 +71,11 @@ const admin = async body => {
           type: "button",
           text: {
             type: "plain_text",
-            text: "Show Help",
+            text: ":postbox: Feedback",
             emoji: true
           },
-          action_id: "show_help"
+          action_id: "open_feedback_form",
+          value: "feedback"
         },
         {
           type: "overflow",
@@ -99,7 +111,6 @@ const admin = async body => {
     }
   ];
 
-  
   const blocks = [...intro].concat(...actions);
 
   return { text: text, blocks: blocks };
