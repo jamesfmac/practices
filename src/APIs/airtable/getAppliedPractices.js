@@ -9,7 +9,7 @@ module.exports = async email => {
 
     const combinedFilter = `AND({Practice Active?}="Active" , ${emailFilter})`;
 
-    console.log(combinedFilter)
+
 
     const appliedPractices = base("Applied Practices");
     return appliedPractices

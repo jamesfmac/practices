@@ -62,7 +62,7 @@ module.exports = async (slackUserID, token) => {
 
     const performanceLevel = mapPercentageToPerformanceLevel(percentage)
 
-    console.log(performanceLevel);
+   
     return {
       id: record.id,
       name: record.fields.Name,

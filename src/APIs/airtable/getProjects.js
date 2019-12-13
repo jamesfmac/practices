@@ -8,7 +8,7 @@ module.exports = async email => {
       : `{TEAM_LEAD_EMAIL}!=""`;
 
 
-    console.log(emailFilter);
+  
 
     const appliedPractices = base("Projects");
     return appliedPractices
