@@ -21,6 +21,10 @@ const {
 module.exports = function(app) {
   app.command("/practicely", practicelySlashCommand);
 
+  app.command("/playbook", practicelySlashCommand);
+
+  app.command("/pbp", practicelySlashCommand)
+
   app.action("open_practices_log", showLogPracticesModal);
 
   app.action("show_help", showHelp);

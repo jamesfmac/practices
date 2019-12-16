@@ -15,6 +15,7 @@ module.exports = {
   appHomeOpened: require("./appHomeOpened"),
   showWeeklyPlanModal: require("./showWeeklyPlanModal"),
   showAppSettingsModal: require("./showAppSettingsModal"),
-  submitAppSettingsModal: require("./submitAppSettingsModal")
+  submitAppSettingsModal: require("./submitAppSettingsModal"),
+  sendDailyPlan: require("./sendDailyPlan")
   
 };

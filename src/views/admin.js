@@ -104,6 +104,14 @@ const admin = async body => {
                 emoji: true
               },
               value: "send_weekly_plan"
+            },
+            {
+              text: {
+                type: "plain_text",
+                text: "Send Daily Plan",
+                emoji: true
+              },
+              value: "send_daily_plan"
             }
           ]
         }
@@ -111,6 +119,8 @@ const admin = async body => {
     }
   ];
 
+
+ 
   const blocks = [...intro].concat(...actions);
 
   return { text: text, blocks: blocks };

@@ -6,5 +6,7 @@ module.exports = {
   teamLeadCommands: require("./teamLeadCommands"),
   weeklyPlan: require("./weeklyPlan"),
   home: require("./home"),
-  appSettingsModal: require("./appSettingsModal")
+  appSettingsModal: require("./appSettingsModal"),
+  dailyPlan: require("./dailyPlan")
+
 };

@@ -50,7 +50,7 @@ module.exports = async userSettings => {
         hint: {
           type: "plain_text",
           text:
-            "Hint: You can always see your pending practices on the Practicely Home tab",
+            "Hint: You can always see your pending practices on the Playbook Pilot home tab",
           emoji: true
         },
         element: {
