@@ -16,6 +16,7 @@ module.exports = {
   showWeeklyPlanModal: require("./showWeeklyPlanModal"),
   showAppSettingsModal: require("./showAppSettingsModal"),
   submitAppSettingsModal: require("./submitAppSettingsModal"),
-  sendDailyPlan: require("./sendDailyPlan")
+  generateDailyPlan: require("./generateDailyPlan"),
+  showDailyPlanModal: require("./showDailyPlanModal")
   
 };

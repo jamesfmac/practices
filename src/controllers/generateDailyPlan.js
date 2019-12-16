@@ -4,8 +4,20 @@ const { dailyPlan } = require("../views");
 const { chatPostDM, usersLookupByEmail } = require("../APIs/slack");
 const { getPracticesLog } = require("../APIs/airtable");
 
-module.exports = async email => {
+module.exports = async requestObj => {
+  //destructue args and get our user details
+  const { email, userID, isForModal } = requestObj;
+
   const userEmail = email || null;
+
+  let slackUserID = null;
+
+  if (userID) {
+    slackUserID = userID;
+  } else {
+    const slackUser = await usersLookupByEmail(userEmail);
+    slackUserID = slackUser.ok ? slackUser.user.id : null;
+  }
 
   //define date range for the current day
 
@@ -84,15 +96,20 @@ module.exports = async email => {
     };
   });
 
-  const slackUser = await usersLookupByEmail(userEmail);
+  const view = await dailyPlan(
+    slackUserID,
+    practicesGroupedByPracticeName,
+    isForModal
+  );
 
-  const slackUserID = slackUser.ok ? slackUser.user.id : null;
+  //chatPostDM(userEmail, view.text, view.blocks);
 
-
-  console.log({
+  return {
+    userEmail: userEmail,
     slackUserID: slackUserID,
+    view: view,
     practices: practicesGroupedByPracticeName
-  });
+  };
 
   //send the response
 };

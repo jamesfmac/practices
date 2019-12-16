@@ -1,13 +1,11 @@
 const moment = require("moment-timezone");
 
-module.exports = (data, isForModal) => {
-  console.log(data.dailyPractices);
-
+module.exports = async (slackUserID, practices, isForModal) => {
   const text = `Your practices for the week`;
 
   const introText = isForModal
     ? `These are your planned practices for today`
-    : `Hey <@${data.slackID}> these are your planned practices for today :airplane:`;
+    : `Hey <@${slackUserID}> these are your planned practices for today :airplane:`;
 
   const introBlock = [
     {
@@ -19,18 +17,21 @@ module.exports = (data, isForModal) => {
     }
   ];
 
- 
-
-  const dailyPracticesBlock = data.dailyPractices.map(practice => {
+  const dailyPracticesBlock = practices.map(practice => {
     const projectList = practice.projects.join(", ");
+
+    const practicetDisplayName =
+      practice.projects.length > 1 ? `${practice.name}s` : `${practice.name}`;
+
+    const projectsListPrefix =
+      practice.projects.length > 1 ? `*Projects:*` : `*Project:*`;
 
     return [
       {
         type: "section",
         text: {
           type: "mrkdwn",
-          text: `${practice.name}s`,
-          verbatim: false
+          text: practicetDisplayName
         }
       },
       {
@@ -38,7 +39,7 @@ module.exports = (data, isForModal) => {
         elements: [
           {
             type: "mrkdwn",
-            text: `:ledger: *Projects:* ${projectList}`,
+            text: `:ledger: ${projectsListPrefix} ${projectList}`,
             verbatim: false
           }
         ]
@@ -46,74 +47,15 @@ module.exports = (data, isForModal) => {
     ];
   });
 
-  const weekHeaderBlock = [
-    {
-      type: "divider"
-    },
+  const altBody = [
     {
       type: "section",
       text: {
         type: "mrkdwn",
-        text: `*Weekly Practices*`,
-        verbatim: false
+        text: `You do now have any practices planned for today`
       }
-    }
+    },
   ];
-
-  const dayOfWeekBlock = data.week
-    .filter(day => day.practices.length > 0)
-    .map(day => {
-      const dayHeading = [
-        {
-          type: "context",
-          elements: [
-            {
-              type: "mrkdwn",
-              text: `:calendar: ${moment(day.date).format("dddd, Do MMM")}`,
-              verbatim: false
-            }
-          ]
-        }
-      ];
-
-      const dayOfWeekPractices = day.practices.map(practice => {
-        return [
-          {
-            type: "section",
-            text: {
-              type: "mrkdwn",
-              text: `${practice.name}`,
-              verbatim: false
-            }
-          },
-          {
-            type: "context",
-            elements: [
-              {
-                type: "mrkdwn",
-                text: `\n>${practice.project} `,
-                verbatim: false
-              }
-            ]
-          }
-        ];
-      });
-
-      const altBody = [
-        {
-          type: "context",
-          elements: [
-            {
-              type: "mrkdwn",
-              text: `N/A`,
-              verbatim: false
-            }
-          ]
-        }
-      ];
-
-      return [...dayHeading].concat(...dayOfWeekPractices);
-    });
 
   const footer = [
     {
@@ -121,7 +63,7 @@ module.exports = (data, isForModal) => {
       elements: [
         {
           type: "mrkdwn",
-          text: ":information_source: Use `/practicely` to log your practices"
+          text: ":information_source: Use `/pbp` to log your practices"
         }
       ]
     }
@@ -132,7 +74,7 @@ module.exports = (data, isForModal) => {
       type: "modal",
       title: {
         type: "plain_text",
-        text: `Your Week`,
+        text: `Todays Practices`,
         emoji: true
       },
       close: {
@@ -141,20 +83,12 @@ module.exports = (data, isForModal) => {
         emoji: true
       },
 
-      blocks: []
-
-        .concat(...dailyPracticesBlock)
-        .concat(...weekHeaderBlock)
-        .concat(...dayOfWeekBlock)
+      blocks: [].concat(...dailyPracticesBlock)
     };
   }
 
   return {
     text: text,
-    blocks: []
-      .concat(...introBlock)
-      .concat(...dailyPracticesBlock)
-      .concat(...dayOfWeekBlock)
-      .concat(...footer)
+    blocks: [].concat(...introBlock).concat(...dailyPracticesBlock)
   };
 };
