@@ -130,7 +130,7 @@ module.exports = (data, isForModal) => {
       elements: [
         {
           type: "mrkdwn",
-          text: ":information_source: Use `/practicely` to log your practices"
+          text: ":information_source: Use `/pbp` to log your practices"
         }
       ]
     }

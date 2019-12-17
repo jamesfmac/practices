@@ -3,7 +3,7 @@ const {
   generatePractices,
   showHelp,
   sendReminders,
-  practicelySlashCommand,
+  slashCommand,
   selectPracticeStatus,
   showFeedbackModal,
   submitFeedbackModal,
@@ -20,11 +20,10 @@ const {
 } = require("../controllers");
 
 module.exports = function(app) {
-  app.command("/practicely", practicelySlashCommand);
 
-  app.command("/playbook", practicelySlashCommand);
+  app.command("/pilot", slashCommand);
 
-  app.command("/pbp", practicelySlashCommand);
+  app.command("/pbp", slashCommand);
 
   app.action("open_practices_log", showLogPracticesModal);
 

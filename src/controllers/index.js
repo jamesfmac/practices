@@ -1,5 +1,5 @@
 module.exports = {
-  practicelySlashCommand: require("./practicelySlashCommand"),
+  slashCommand: require("./slashCommand"),
   selectPracticeStatus: require("./selectPracticeStatus"),
   showFeedbackModal: require("./showFeedbackModal"),
   submitFeedbackModal: require("./submitFeedbackModal"),
@@ -18,5 +18,4 @@ module.exports = {
   submitAppSettingsModal: require("./submitAppSettingsModal"),
   generateDailyPlan: require("./generateDailyPlan"),
   showDailyPlanModal: require("./showDailyPlanModal")
-  
 };
