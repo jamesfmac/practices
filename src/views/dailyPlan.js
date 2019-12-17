@@ -1,7 +1,12 @@
 const moment = require("moment-timezone");
 
 module.exports = async (slackUserID, practices, isForModal) => {
-  const text = `Your practices for the week`;
+  const numberOfPractices = practices.length;
+
+  const text =
+    numberOfPractices > 0
+      ? `<@${slackUserID}> you have ${numberOfPractices} practices planned for today`
+      : `You don't have any practices planned for today:)`;
 
   const introText = isForModal
     ? `These are your planned practices for today`
@@ -54,7 +59,7 @@ module.exports = async (slackUserID, practices, isForModal) => {
         type: "mrkdwn",
         text: `You do now have any practices planned for today`
       }
-    },
+    }
   ];
 
   const footer = [
