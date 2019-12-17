@@ -2,7 +2,7 @@ const { getTeamLeads } = require("../APIs/airtable");
 const { admin, teamLeadCommands } = require("../views");
 const { chatPostEphemeral, usersInfo } = require("../APIs/slack");
 
-const practicelySlashCommand = async ({ body, context, ack, payload, say }) => {
+module.exports = async ({ body, context, ack, payload, say }) => {
   // Acknowledge command request
 
   ack();
@@ -44,4 +44,4 @@ const practicelySlashCommand = async ({ body, context, ack, payload, say }) => {
     console.log(error);
   }
 };
-module.exports = practicelySlashCommand;
+

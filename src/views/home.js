@@ -51,6 +51,15 @@ module.exports = (slackUserID, appliedPracticesGroupedByProject, projects) => {
           type: "button",
           text: {
             type: "plain_text",
+            text: "Todays Practices",
+            emoji: true
+          },
+          action_id: "openTodaysPractices"
+        },
+        {
+          type: "button",
+          text: {
+            type: "plain_text",
             text: ":postbox: Feedback",
             emoji: true
           },

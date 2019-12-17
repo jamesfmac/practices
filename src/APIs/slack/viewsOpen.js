@@ -8,7 +8,7 @@ module.exports = view => {
       view: view.view
     })
     .catch(error => {
-      console.log("views.open", error);
+      console.log("views.open error", error.data);
       return error;
     });
 };

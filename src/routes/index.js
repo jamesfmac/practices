@@ -3,7 +3,7 @@ const {
   generatePractices,
   showHelp,
   sendReminders,
-  practicelySlashCommand,
+  slashCommand,
   selectPracticeStatus,
   showFeedbackModal,
   submitFeedbackModal,
@@ -15,11 +15,15 @@ const {
   appHomeOpened,
   showWeeklyPlanModal,
   showAppSettingsModal,
-  submitAppSettingsModal
+  submitAppSettingsModal,
+  showDailyPlanModal
 } = require("../controllers");
 
 module.exports = function(app) {
-  app.command("/practicely", practicelySlashCommand);
+
+  app.command("/pilot", slashCommand);
+
+  app.command("/pbp", slashCommand);
 
   app.action("open_practices_log", showLogPracticesModal);
 
@@ -42,15 +46,16 @@ module.exports = function(app) {
   app.action("updateStatusButtonMissed", updateStatusButtonMissed);
 
   app.view("feedback", submitFeedbackModal);
-  
+
   app.action("send_weekly_plan", sendWeeklyPlan);
 
   app.event("app_home_opened", appHomeOpened);
 
-  app.action("openWeekyPLan", showWeeklyPlanModal )
+  app.action("openWeekyPLan", showWeeklyPlanModal);
 
-  app.action("showAppSettingsModal", showAppSettingsModal)
-  
-  app.view ("submitAppSettingsModal", submitAppSettingsModal)
+  app.action("showAppSettingsModal", showAppSettingsModal);
 
+  app.view("submitAppSettingsModal", submitAppSettingsModal);
+
+  app.action("openTodaysPractices", showDailyPlanModal);
 };

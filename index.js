@@ -4,12 +4,14 @@ const { app, receiver } = require("./src/bolt");
 const {
   scheduleReminders,
   schedulePracticeGeneration,
-  scheduleWeeklyPlan
+  scheduleWeeklyPlan,
+  scheduleDailyPlan
 } = require("./src/schedules");
 
-scheduleReminders.start();
+//scheduleReminders.start(); turning these off to test the response rate
 schedulePracticeGeneration.start();
-scheduleWeeklyPlan.start()
+scheduleWeeklyPlan.start();
+scheduleDailyPlan.start();
 
 // TODO swtich cron schedules to be explicitly started
 

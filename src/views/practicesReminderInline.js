@@ -92,7 +92,7 @@ module.exports = practicesGroupedByTeamLead => {
       text: {
         type: "mrkdwn",
         text:
-          "We :heart: feedback! Help us make practicely better for you! :point_right: :point_right:"
+          "We :heart: feedback! Help us make Playbook Pilot better for you! :point_right: :point_right:"
       },
       accessory: {
         type: "button",
