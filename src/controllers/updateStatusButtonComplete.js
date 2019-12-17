@@ -1,12 +1,15 @@
 const { updatePracticesLog } = require("../APIs/airtable/practicesLog");
 const { viewsUpdate } = require("../APIs/slack");
+const refreshHome = require("./refreshHome");
 
 module.exports = async ({ ack, body, view, context, payload }) => {
   ack();
 
+
   try {
     const botToken = context.botToken;
     const viewID = body.view.id;
+    const slackUserID = body.user.id;
     const initialView = body.view;
     const initialBlocks = body.view.blocks;
     const affectedBlock = payload.block_id;
@@ -26,6 +29,9 @@ module.exports = async ({ ack, body, view, context, payload }) => {
     });
 
     if (resultOfAirtableUpdate) {
+      //refresh home to recalc performance stats
+      refreshHome(slackUserID, botToken);
+
       //update the modal view if the airtable update is succesful
       const updatedBlocks = await initialView.blocks.map((block, index) => {
         if (index === indexOfActionedPractice) {

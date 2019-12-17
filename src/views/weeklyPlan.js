@@ -24,7 +24,7 @@ module.exports = (data, isForModal) => {
       type: "section",
       text: {
         type: "mrkdwn",
-        text: "*Daily Practices*",
+        text: "*Every Day*",
         verbatim: false
       }
     }
@@ -47,7 +47,7 @@ module.exports = (data, isForModal) => {
         elements: [
           {
             type: "mrkdwn",
-            text: `*Projects:* ${projectList}`,
+            text: `:ledger: *Projects:* ${projectList}`,
             verbatim: false
           }
         ]
@@ -59,14 +59,6 @@ module.exports = (data, isForModal) => {
     {
       type: "divider"
     },
-    {
-      type: "section",
-      text: {
-        type: "mrkdwn",
-        text: `*Weekly Practices*`,
-        verbatim: false
-      }
-    }
   ];
 
   const dayOfWeekBlock = data.week
@@ -74,14 +66,12 @@ module.exports = (data, isForModal) => {
     .map(day => {
       const dayHeading = [
         {
-          type: "context",
-          elements: [
-            {
-              type: "mrkdwn",
-              text: `:calendar: ${moment(day.date).format("dddd, Do MMM")}`,
-              verbatim: false
-            }
-          ]
+          type: "section",
+          text: {
+            type: "mrkdwn",
+            text: `*${moment(day.date).format("dddd")}*`,
+            verbatim: false
+          }
         }
       ];
 
@@ -100,7 +90,7 @@ module.exports = (data, isForModal) => {
             elements: [
               {
                 type: "mrkdwn",
-                text: `\n>${practice.project} `,
+                text: `:ledger: *Project:* ${practice.project} `,
                 verbatim: false
               }
             ]
@@ -130,7 +120,7 @@ module.exports = (data, isForModal) => {
       elements: [
         {
           type: "mrkdwn",
-          text: ":information_source: Use `/practicely` to log your practices"
+          text: ":information_source: Use `/pbp` to log your practices"
         }
       ]
     }
@@ -151,7 +141,7 @@ module.exports = (data, isForModal) => {
       },
 
       blocks: []
-    
+
         .concat(...dailyPracticesBlock)
         .concat(...weekHeaderBlock)
         .concat(...dayOfWeekBlock)
@@ -160,8 +150,8 @@ module.exports = (data, isForModal) => {
 
   return {
     text: text,
-    blocks: [...introBlock]
-      .concat(...dailyPracticesHeading)
+    blocks: []
+      .concat(...introBlock)
       .concat(...dailyPracticesBlock)
       .concat(...weekHeaderBlock)
       .concat(...dayOfWeekBlock)

@@ -9,14 +9,19 @@ module.exports = async ({ ack, payload, body, view }) => {
     const sendDailyReminderSelection =
       payload.state.values["send-reminder-input"]["send-reminder-select"][
         "selected_option"
-      ]["value"] == "Daily"
+      ]["value"] == "Daily";
 
+    const sendDailyPlanSelection =
+      payload.state.values["send-plan-input"]["send-plan-select"][
+        "selected_option"
+      ]["value"] == "Daily";
 
     const saveSettingsInAirtable = await updateTeamLeads([
       {
         id: airtableRecordID,
         fields: {
-          "Send Daily Reminder": sendDailyReminderSelection
+          "Send Daily Reminder": sendDailyReminderSelection,
+          "Send Daily Planned Practices": sendDailyPlanSelection
         }
       }
     ]);

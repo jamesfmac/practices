@@ -22,7 +22,7 @@ const feedbackModal = async body => {
         type: "section",
         text: {
           type: "plain_text",
-          text: `:wave: Hey <@${body.user.username}>!\n\nPracticely is in early alpha and every little bit of feedback is amazing! :star-struck:`,
+          text: `:wave: Hey <@${body.user.username}>!\n\nPlaybook Pilot is in early alpha and every little bit of feedback is amazing! :star-struck:`,
           emoji: true
         }
       },
@@ -35,7 +35,7 @@ const feedbackModal = async body => {
         block_id: "feedback_improvment",
         label: {
           type: "plain_text",
-          text: "What is the biggest problem with Practicely?",
+          text: "What is the biggest problem with Playbook Pilot?",
           emoji: true
         },
         element: {

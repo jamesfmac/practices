@@ -2,7 +2,6 @@ const { SLACK_BOT_TOKEN } = require("../../../config");
 const { app } = require("../../bolt");
 
 module.exports = async email => {
-  console.log(`Finding slack user for ${email}`);
   const user = await app.client.users
     .lookupByEmail({
       token: SLACK_BOT_TOKEN,
@@ -12,7 +11,8 @@ module.exports = async email => {
       return user;
     })
     .catch(error => {
-      console.error(error);
+      console.error('usersLookupByEmail error', error.data);
+      
 
       return error.data;
     });
