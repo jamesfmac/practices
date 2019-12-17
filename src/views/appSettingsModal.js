@@ -1,5 +1,6 @@
 module.exports = async userSettings => {
   const sendDailyReminders = userSettings.sendDailyReminders;
+  const sendDailyPlan = userSettings.sendDailyPlan
 
   const optionDailyReminders = {
     text: {
@@ -17,6 +18,15 @@ module.exports = async userSettings => {
       emoji: true
     },
     value: "Weekly"
+  };
+
+  const optionNeverRemind = {
+    text: {
+      type: "plain_text",
+      text: "Don't remind me",
+      emoji: true
+    },
+    value: "Never"
   };
 
   return {
@@ -37,26 +47,46 @@ module.exports = async userSettings => {
       text: "Cancel",
       emoji: true
     },
-    private_metadata: `${userSettings.id}`, 
+    private_metadata: `${userSettings.id}`,
     blocks: [
       {
         type: "input",
-        block_id: "send-reminder-input",
+        block_id: "send-plan-input",
         label: {
           type: "plain_text",
-          text: "Overdue Practices reminder",
+          text: "Planned practices reminder",
           emoji: true
         },
         hint: {
           type: "plain_text",
           text:
-            "Hint: You can always see your pending practices on the Playbook Pilot home tab",
+            "Playbook pilot can message you each morning with any practices planned for the day",
           emoji: true
         },
         element: {
           type: "static_select",
+          action_id: "send-plan-select",
+
+          initial_option: sendDailyPlan
+            ? optionDailyReminders
+            : optionNeverRemind,
+
+          options: [optionDailyReminders, optionNeverRemind]
+        }
+      },
+      {
+        type: "input",
+        block_id: "send-reminder-input",
+        label: {
+          type: "plain_text",
+          text: "Overdue practices reminder",
+          emoji: true
+        },
+      
+        element: {
+          type: "static_select",
           action_id: "send-reminder-select",
-    
+
           initial_option: sendDailyReminders
             ? optionDailyReminders
             : optionWeeklyReminders,
