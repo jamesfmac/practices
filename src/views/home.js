@@ -1,6 +1,10 @@
-module.exports = (slackUserID, appliedPracticesGroupedByProject, projects) => {
-
- 
+module.exports = (
+  slackUserID,
+  appliedPracticesGroupedByProject,
+  projects,
+  pendingPractices
+) => {
+  console.log(pendingPractices.length);
   const heading = [
     {
       type: "section",
@@ -22,6 +26,50 @@ module.exports = (slackUserID, appliedPracticesGroupedByProject, projects) => {
       type: "divider"
     }
   ];
+
+  const overduePracticesNoticeLG =
+    pendingPractices.length > 0
+      ? [
+          {
+            type: "section",
+            text: {
+              type: "mrkdwn",
+              text: `>:rotating_light: <@${slackUserID}> you have *${pendingPractices.length}* pending practices`
+            }
+          },
+          {
+            type: "actions",
+            elements: [
+              {
+                type: "button",
+                text: {
+                  type: "plain_text",
+                  text: "Update Practices",
+                  emoji: true
+                },
+
+                action_id: "open_practices_log",
+                style: "primary"
+              }
+            ]
+          }
+        ]
+      : [];
+
+  const overduePracticesNoticeSM =
+    pendingPractices.length > 0
+      ? [
+          {
+            type: "context",
+            elements: [
+              {
+                type: "mrkdwn",
+                text: `:exclamation: *${pendingPractices.length} practices overdue*`
+              }
+            ]
+          }
+        ]
+      : [];
 
   const actions = [
     {
@@ -142,6 +190,7 @@ module.exports = (slackUserID, appliedPracticesGroupedByProject, projects) => {
     .concat(...heading)
     .concat(...projectStats)
     .concat(...actions)
+    .concat(...overduePracticesNoticeSM)
     .concat(...activeProjectsHeading)
     .concat(...activeProjects);
 

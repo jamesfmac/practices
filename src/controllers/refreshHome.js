@@ -1,6 +1,13 @@
+const { TIMEZONE } = require("../../config");
+const moment = require("moment-timezone");
+
 const { viewsPublish, usersInfo } = require("../APIs/slack");
 const { home } = require("../views");
-const { getAppliedPractices, getProjects } = require("../APIs/airtable");
+const {
+  getAppliedPractices,
+  getProjects,
+  getPracticesLog
+} = require("../APIs/airtable");
 
 module.exports = async (slackUserID, token) => {
   //helper functions
@@ -30,17 +37,36 @@ module.exports = async (slackUserID, token) => {
       return "Ok Practices";
     } else if (percentage < 0.95) {
       return "Great Practices";
-    }
-    else{
-      return "No practices"
+    } else {
+      return "No practices";
     }
   };
 
   //get the data
+
+  const today = moment().tz(TIMEZONE);
+  const tomorrow = today
+    .clone()
+    .add(1, "day")
+    .format("YYYY-MM-DD");
+
+  const oneYearAgo = today
+    .clone()
+    .subtract(1, "year")
+    .format("YYYY-MM-DD");
+
   const slackUserInfo = await usersInfo(slackUserID);
   const userEmail = slackUserInfo.profile.email;
   const appliedPractices = await getAppliedPractices(userEmail);
   const projects = await getProjects(userEmail);
+
+  const pendingPractices = await getPracticesLog({
+    email: userEmail,
+    status: "Pending",
+    afterDate: oneYearAgo,
+    beforeDate: tomorrow
+  });
+
 
   const formattedAppliedPractices = appliedPractices.map(record => {
     return {
@@ -53,16 +79,15 @@ module.exports = async (slackUserID, token) => {
     };
   });
 
-  const formattedProjects = await projects.map( record => {
+  const formattedProjects = await projects.map(record => {
     //define good/bad practice brackets here use a case statement probably
     const percentage = record.fields.PERCENTAGE_PRACTICES_COMPLETE;
-    const percentageString = percentage.toLocaleString( undefined, {
+    const percentageString = percentage.toLocaleString(undefined, {
       style: "percent"
     });
 
-    const performanceLevel = mapPercentageToPerformanceLevel(percentage)
+    const performanceLevel = mapPercentageToPerformanceLevel(percentage);
 
-   
     return {
       id: record.id,
       name: record.fields.Name,
@@ -71,7 +96,6 @@ module.exports = async (slackUserID, token) => {
       missed: record.fields.MISSED,
       percentage: percentageString,
       performanceLevel: performanceLevel
-     
     };
   });
 
@@ -80,17 +104,17 @@ module.exports = async (slackUserID, token) => {
     "project"
   );
 
-
-
   const view = await home(
     slackUserID,
     appliedPracticesGroupedByProject,
-    formattedProjects
+    formattedProjects,
+    pendingPractices
   );
 
   viewsPublish({
     token: token,
     user_id: slackUserID,
+
     blocks: view.blocks
   });
 };

@@ -9,6 +9,10 @@ module.exports = async ({ body, context, ack, say }) => {
   try {
     //set up date ranges
     const todaysDate = moment().tz(TIMEZONE);
+    const oneYearAgo = todaysDate
+      .clone()
+      .subtract(1, "year")
+      .format("YYYY-MM-DD");
     const startOfMonth = todaysDate
       .clone()
       .startOf("month")
@@ -27,7 +31,7 @@ module.exports = async ({ body, context, ack, say }) => {
       email: slackUserInfo.profile.email,
       status: "Pending",
       beforeDate: tomorrow,
-      afterDate: startOfMonth,
+      afterDate: oneYearAgo,
       maxRecords: 25,
       sort: [{ field: "Date", direction: "desc" }]
     });
@@ -55,7 +59,7 @@ module.exports = async ({ body, context, ack, say }) => {
       view: view
     });
   } catch (error) {
-    console.log('viewsOpen',error);
+    console.log("viewsOpen", error);
   }
 };
 
