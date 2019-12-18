@@ -1,7 +1,8 @@
 const {
   generatePractices,
   sendWeeklyPlan,
-  sendDailyPlan
+  sendDailyPlan,
+  sendOverdueReminder
 } = require("../methods");
 
 module.exports = async ({ ack, action, say }) => {
@@ -20,6 +21,9 @@ module.exports = async ({ ack, action, say }) => {
         break;
       case "send_daily_plan":
         sendDailyPlan();
+        break;
+      case "send_overdue_reminders":
+        sendOverdueReminder();
         break;
       default:
         return;

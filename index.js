@@ -5,13 +5,15 @@ const {
   scheduleReminders,
   schedulePracticeGeneration,
   scheduleWeeklyPlan,
-  scheduleDailyPlan
+  scheduleDailyPlan,
+  scheduleOverdueReminder
 } = require("./src/schedules");
 
 //scheduleReminders.start(); turning these off to test the response rate
 schedulePracticeGeneration.start();
 scheduleWeeklyPlan.start();
 scheduleDailyPlan.start();
+scheduleOverdueReminder.start();
 
 // TODO swtich cron schedules to be explicitly started
 

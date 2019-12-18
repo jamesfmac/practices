@@ -7,6 +7,7 @@ module.exports = {
   weeklyPlan: require("./weeklyPlan"),
   home: require("./home"),
   appSettingsModal: require("./appSettingsModal"),
-  dailyPlan: require("./dailyPlan")
+  dailyPlan: require("./dailyPlan"),
+  overduePracticesReminder: require("./overduePracticesReminder")
 
 };

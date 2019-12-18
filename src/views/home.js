@@ -4,7 +4,6 @@ module.exports = (
   projects,
   pendingPractices
 ) => {
-  console.log(pendingPractices.length);
   const heading = [
     {
       type: "section",
