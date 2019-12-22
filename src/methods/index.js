@@ -3,5 +3,6 @@ module.exports = {
   sendReminders: require("./sendReminders"),
   sendWeeklyPlan: require("./sendWeeklyPlan"),
   sendDailyPlan: require("./sendDailyPlan"),
-  sendOverdueReminder: require("./sendOverdueReminder")
+  sendOverdueReminder: require("./sendOverdueReminder"),
+  authUser: require("./authUser")
 };

@@ -18,5 +18,4 @@ module.exports = async ({ body, context, ack }) => {
     view: dailyPlan.view
   });
 
-  console.log(dailyPlan);
 };

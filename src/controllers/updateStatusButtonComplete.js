@@ -19,7 +19,7 @@ module.exports = async ({ ack, body, view, context, payload }) => {
     );
     const newStatus = "Completed";
 
-    console.log(initialView);
+   
 
     const resultOfAirtableUpdate = await updatePracticesLog({
       id: recordID,

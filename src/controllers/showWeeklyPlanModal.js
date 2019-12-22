@@ -7,7 +7,6 @@ const { getPracticesLog } = require("../APIs/airtable");
 module.exports = async ({ body, context, ack }) => {
   ack();
 
-  console.log(context);
   //get the user details
   const slackUserID = body.user.id;
   const slackUserInfo = await usersInfo(slackUserID);
@@ -126,7 +125,6 @@ module.exports = async ({ body, context, ack }) => {
 
   const view = weeklyPlan(practicesFormattedToSend[0], true);
 
-  console.log(practicesFormattedToSend);
 
   viewsOpen({
     token: context.botToken,

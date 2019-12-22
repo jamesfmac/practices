@@ -4,5 +4,6 @@ module.exports = {
   getPracticesLog: require("./getPracticesLog"),
   getAppliedPractices: require("./getAppliedPractices"),
   getProjects: require("./getProjects"),
-  updateTeamLeads: require("./updateTeamLeads")
+  updateTeamLeads: require("./updateTeamLeads"),
+  getTeamLeadFromSlackID: require("./getTeamLeadFromSlackID")
 };

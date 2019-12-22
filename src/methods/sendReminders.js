@@ -70,8 +70,8 @@ const sendReminders = async email => {
     //get a list of the practices due today, group them by team lead email and shape data
 
     const todaysPractices = await getPracticesLog({
-      afterDate: date.clone().subtract(1, "day"),
-      beforeDate: date.clone().add(1, "day"),
+      afterDate: date.clone().subtract(1, "day").format("YYYY-MM-DD"),
+      beforeDate: date.clone().add(1, "day").format("YYYY-MM-DD"),
       status: "Pending",
       email: userEmail
     });
