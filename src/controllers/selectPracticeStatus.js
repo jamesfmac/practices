@@ -1,7 +1,9 @@
 const { updatePracticesLog } = require("../APIs/airtable/practicesLog");
 const { chatUpdate } = require("../APIs/slack");
 
-module.exports = async ({ body, context, say, payload, ack }) => {
+const analytics = require("../APIs/segment")
+
+module.exports = async ({ body, context, payload, ack }) => {
   ack();
 
   try {
@@ -44,6 +46,20 @@ module.exports = async ({ body, context, say, payload, ack }) => {
       text: body.message.text,
       blocks: updatedBlocks
     });
+
+
+
+analytics.track({
+  userId: body.user.id,
+  event: `Practice ${newStatus}`,
+  properties: {
+    name: updatePracticeLog[0].fields.PRACTICE_NAME[0],
+    date: updatePracticeLog[0].fields.Date,
+    project: updatePracticeLog[0].fields.PROJECT_NAME[0],
+    location: 'daily reminder'
+  }
+});
+
   } catch (error) {
     console.error(error);
   }

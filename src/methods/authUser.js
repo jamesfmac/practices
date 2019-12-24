@@ -1,5 +1,6 @@
 const moment = require("moment-timezone");
 const { TIMEZONE } = require("../../config");
+const analytics = require("../APIs/segment");
 const {
   getTeamLeads,
   getTeamLeadFromSlackID,
@@ -9,7 +10,6 @@ const { usersInfo } = require("../APIs/slack");
 
 module.exports = async ({ payload, body, context, next, say, ack }) => {
   try {
-    console.log("middleware hit with payload", payload);
     //setup timestamp
     const timestamp = moment()
       .tz(TIMEZONE)
@@ -26,13 +26,11 @@ module.exports = async ({ payload, body, context, next, say, ack }) => {
       }
     };
     const slackUserID = getSlackID(payload, body);
-    const slackUser = await usersInfo(slackUserID);
-    const slackEmailAddress = slackUser.profile.email;
     const teamLead = await getTeamLeadFromSlackID(slackUserID);
 
     if (await teamLead[0]) {
       context.slackUserID = slackUserID;
-      context.userEmail = slackEmailAddress;
+      context.userEmail = teamLead[0].get("Email Address");
       context.isPbPAdmin = teamLead[0].get("Practices Admin");
       context.PbPRecordID = teamLead[0].id;
 
@@ -50,6 +48,9 @@ module.exports = async ({ payload, body, context, next, say, ack }) => {
     } else {
       //attempt to slack user to an existing account
       console.log("Attempting to link account");
+      const slackUser = await usersInfo(slackUserID);
+      const slackEmailAddress = slackUser.profile.email;
+
       const matchedTeamLead = await getTeamLeads(slackEmailAddress);
 
       if (await matchedTeamLead[0]) {
@@ -69,6 +70,21 @@ module.exports = async ({ payload, body, context, next, say, ack }) => {
         context.userEmail = slackEmailAddress;
         context.isPbPAdmin = matchedTeamLead[0].get("Practices Admin");
         context.PbPRecordID = matchedTeamLead[0].id;
+
+        analytics.identify({
+          userId: context.slackUserID,
+          traits: {
+            name: matchedTeamLead[0].get("Name"),
+            email: context.userEmail,
+            createdAt: timestamp
+          }
+        });
+
+        analytics.track({
+          userId: context.slackUserID,
+          event: "Account Linked"
+        });
+
         next();
       } else {
         ack();

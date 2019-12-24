@@ -1,17 +1,17 @@
 const { appSettingsModal } = require("../views");
-const { viewsOpen, usersInfo } = require("../APIs/slack");
+const { viewsOpen } = require("../APIs/slack");
 const { getTeamLeads } = require("../APIs/airtable");
+const analytics = require("../APIs/segment");
+
 module.exports = async ({ body, context, ack }) => {
   try {
     ack();
 
     //get the data
-    const slackUserID = body.user.id;
-    const slackUserInfo = await usersInfo(slackUserID);
-    const userEmail = slackUserInfo.profile.email;
+
+    const userEmail = context.userEmail;
     const teamLeadInfo = await getTeamLeads(userEmail);
 
-    
     const formattedSettings = teamLeadInfo.map(record => {
       return {
         id: record.id,
@@ -30,6 +30,11 @@ module.exports = async ({ body, context, ack }) => {
       trigger_id: body.trigger_id,
       view: view
     });
+    analytics.track({
+      userId: context.slackUserID,
+      event: "Settings Viewed"
+    });
+
   } catch (error) {
     console.error(error);
   }
