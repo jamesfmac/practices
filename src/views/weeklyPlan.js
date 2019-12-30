@@ -1,7 +1,6 @@
 const moment = require("moment-timezone");
 
 module.exports = (data, isForModal) => {
-  console.log(data.dailyPractices);
 
   const text = `Your practices for the week`;
 

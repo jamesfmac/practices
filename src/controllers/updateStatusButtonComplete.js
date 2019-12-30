@@ -1,10 +1,11 @@
 const { updatePracticesLog } = require("../APIs/airtable/practicesLog");
 const { viewsUpdate } = require("../APIs/slack");
 const refreshHome = require("./refreshHome");
+const analytics = require("../APIs/segment");
 
-module.exports = async ({ ack, body, view, context, payload }) => {
+
+module.exports = async ({ ack, body, context, payload }) => {
   ack();
-
 
   try {
     const botToken = context.botToken;
@@ -19,8 +20,6 @@ module.exports = async ({ ack, body, view, context, payload }) => {
     );
     const newStatus = "Completed";
 
-    console.log(initialView);
-
     const resultOfAirtableUpdate = await updatePracticesLog({
       id: recordID,
       fields: {
@@ -30,7 +29,19 @@ module.exports = async ({ ack, body, view, context, payload }) => {
 
     if (resultOfAirtableUpdate) {
       //refresh home to recalc performance stats
+
       refreshHome(slackUserID, botToken);
+
+      analytics.track({
+        userId: slackUserID,
+        event: "Practice Completed",
+        properties: {
+          name: resultOfAirtableUpdate[0].fields.PRACTICE_NAME[0],
+          date: resultOfAirtableUpdate[0].fields.Date,
+          project: resultOfAirtableUpdate[0].fields.PROJECT_NAME[0],
+          location: 'update practices modal'
+        }
+      });
 
       //update the modal view if the airtable update is succesful
       const updatedBlocks = await initialView.blocks.map((block, index) => {
@@ -61,7 +72,7 @@ module.exports = async ({ ack, body, view, context, payload }) => {
       console.log("Modal updated", resultOfModalUpdate.ok);
     }
 
-    console.log("Airtable updated", resultOfAirtableUpdate);
+    console.log("Airtable updated", resultOfAirtableUpdate[0].id);
   } catch (error) {
     console.error(error);
   }

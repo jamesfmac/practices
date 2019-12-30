@@ -5,8 +5,19 @@ const {
   sendOverdueReminder
 } = require("../methods");
 
-module.exports = async ({ ack, action, say }) => {
+const analytics = require("../APIs/segment");
+
+module.exports = async ({ context, ack, action, say }) => {
   try {
+    analytics.track({
+      userId: context.slackUserID,
+      event: "App Button Clicked",
+      properties: {
+        location: "admin overflow menu",
+        button: action.selected_option.text
+      }
+    });
+
     ack();
     const selectedMenuOption = action.selected_option.value;
     switch (selectedMenuOption) {

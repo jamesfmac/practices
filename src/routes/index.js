@@ -18,22 +18,22 @@ const {
   submitAppSettingsModal,
   showDailyPlanModal
 } = require("../controllers");
+const { authUser } = require("../methods");
 
 module.exports = function(app) {
+  app.command("/pilot", authUser, slashCommand);
 
-  app.command("/pilot", slashCommand);
-
-  app.command("/pbp", slashCommand);
+  app.command("/pbp", authUser, slashCommand);
 
   app.action("open_practices_log", showLogPracticesModal);
 
-  app.action("show_help", showHelp);
+  app.action("show_help", authUser, showHelp);
 
-  app.action("create_practices", generatePractices);
+  app.action("create_practices", authUser, generatePractices);
 
-  app.action("remind_all", sendReminders);
+  app.action("remind_all", authUser, sendReminders);
 
-  app.action("admin_overflow", adminOverflowMenu);
+  app.action("admin_overflow", authUser, adminOverflowMenu);
 
   app.action("open_feedback_form", showFeedbackModal);
 
@@ -47,15 +47,15 @@ module.exports = function(app) {
 
   app.view("feedback", submitFeedbackModal);
 
-  app.action("send_weekly_plan", sendWeeklyPlan);
+  app.action("send_weekly_plan", authUser, sendWeeklyPlan);
 
   app.event("app_home_opened", appHomeOpened);
 
   app.action("openWeekyPLan", showWeeklyPlanModal);
 
-  app.action("showAppSettingsModal", showAppSettingsModal);
+  app.action("showAppSettingsModal", authUser, showAppSettingsModal);
 
   app.view("submitAppSettingsModal", submitAppSettingsModal);
 
-  app.action("openTodaysPractices", showDailyPlanModal);
+  app.action("openTodaysPractices", authUser, showDailyPlanModal);
 };

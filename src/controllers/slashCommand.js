@@ -1,29 +1,28 @@
-const { getTeamLeads } = require("../APIs/airtable");
 const { admin, teamLeadCommands } = require("../views");
-const { chatPostEphemeral, usersInfo } = require("../APIs/slack");
+const { chatPostEphemeral } = require("../APIs/slack");
+const analytics = require("../APIs/segment");
 
-module.exports = async ({ body, context, ack, payload, say }) => {
+module.exports = async ({ body, context, ack, payload }) => {
   // Acknowledge command request
 
   ack();
-  const slackUserInfo = await usersInfo(payload.user_id);
+
   try {
-    const practicesUserInfo = await getTeamLeads(slackUserInfo.profile.email);
-    const isAdmin = practicesUserInfo[0].get("Practices Admin")
-
-
+    const isAdmin = context.isPbPAdmin;
     const adminResponseMessage = await admin(body);
     const teamLeadResponseMessage = await teamLeadCommands(body);
 
-    if (practicesUserInfo == undefined) {
-      chatPostEphemeral({
-        token: context.botToken,
-        user: payload.user_id,
-        channel: body.channel_id,
-        text: `Sorry I couldn't find a user account for you`,
-        blocks: null
-      });
-    } else if (isAdmin) {
+    analytics.track({
+      userId: context.slackUserID,
+      event: "Slash Command",
+      properties: {
+        command: body.command,
+        channel: body.channel_name,
+        isAdmin: isAdmin
+      }
+    });
+
+    if (isAdmin) {
       chatPostEphemeral({
         token: context.botToken,
         user: payload.user_id,
@@ -44,4 +43,3 @@ module.exports = async ({ body, context, ack, payload, say }) => {
     console.log(error);
   }
 };
-

@@ -11,8 +11,9 @@
   "author": "James McManamey",
   "license": "ISC",
   "dependencies": {
-    "@slack/bolt": "^1.4.1",
+    "@slack/bolt": "^1.5.0",
     "airtable": "^0.7.2",
+    "analytics-node": "^3.4.0-beta.1",
     "cron": "^1.7.2",
     "dotenv": "^8.2.0",
     "moment": "^2.24.0",
