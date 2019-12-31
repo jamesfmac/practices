@@ -5,7 +5,8 @@ const analytics = require("../APIs/segment")
 module.exports = async ({ body, context, ack }) => {
   ack();
 
-  const slackUserID = body.user.id;
+  const slackUserID = context.slackUserID;
+  const userEmail = context.userEmail
 
   const location = body.view? body.view.type: body.channel.name
 
@@ -19,7 +20,7 @@ module.exports = async ({ body, context, ack }) => {
   })
 
   const dailyPlan = await generateDailyPlan({
-    email: null,
+    email: userEmail,
     userID: slackUserID,
     isForModal: true
   });
