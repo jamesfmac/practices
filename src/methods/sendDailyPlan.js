@@ -9,13 +9,17 @@ module.exports = async () => {
 
     for (const teamLead of teamLeads) {
       const userEmail = teamLead.fields["Email Address"];
-      const userWantsDailyPlan =
-        teamLead.fields["Send Daily Planned Practices"];
+      const userPlannedPracticesSettings =
+        teamLead.fields["Planned Practices Reminder"];
+
+      const userWantsDailyPlan = userPlannedPracticesSettings
+        ? userPlannedPracticesSettings.includes("Daily")
+        : false;
 
       console.log("email address", userEmail);
       const slackUser = await usersLookupByEmail(userEmail);
 
-      const slackUserID = slackUser.ok ? slackUser.user.id : null;
+      const slackUserID = slackUser.ok ? slackUser.user.id : false;
 
       if (slackUserID && userWantsDailyPlan) {
         const dailyPlan = await generateDailyPlan({
