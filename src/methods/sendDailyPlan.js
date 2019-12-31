@@ -17,24 +17,19 @@ module.exports = async () => {
 
       const slackUserID = slackUser.ok ? slackUser.user.id : null;
 
-      if (slackUserID === null || !userWantsDailyPlan) {
-        continue;
+      if (slackUserID && userWantsDailyPlan) {
+        const dailyPlan = await generateDailyPlan({
+          email: userEmail,
+          userID: slackUserID,
+          isForModal: false
+        });
+
+        chatPostDM(
+          dailyPlan.userEmail,
+          dailyPlan.view.text,
+          dailyPlan.view.blocks
+        );
       }
-
-      const dailyPlan = await generateDailyPlan({
-        email: userEmail,
-        userID: slackUserID,
-        isForModal: false
-      });
-
-      chatPostDM(
-        dailyPlan.userEmail,
-        dailyPlan.view.text,
-        dailyPlan.view.blocks
-      );
-
-      console.log("userSlackID", slackUserID);
-      console.log("daily plan", dailyPlan);
     }
   } catch (error) {
     console.log(error);

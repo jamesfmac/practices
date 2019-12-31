@@ -15,8 +15,8 @@ const updatePracticesLog = async updates => {
   try {
     return base("Practices Log")
       .update([updates])
-      .then(records => {
-        return true;
+      .then(record => {
+        return record;
       });
   } catch (error) {
     console.log(error);

@@ -1,6 +1,6 @@
 const { insertFeedback } = require("../APIs/airtable");
 
-module.exports = async ({ ack, body, view, context }) => {
+module.exports = async ({ ack, body, view }) => {
   ack();
 
   try {

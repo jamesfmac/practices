@@ -3,11 +3,22 @@ const moment = require("moment-timezone");
 const { weeklyPlan } = require("../views");
 const { viewsOpen, usersInfo } = require("../APIs/slack");
 const { getPracticesLog } = require("../APIs/airtable");
+const analytics = require("../APIs/segment")
 
 module.exports = async ({ body, context, ack }) => {
   ack();
 
-  console.log(context);
+  const location = body.view? body.view.type: body.channel.name
+
+  analytics.track({
+    userId: body.user.id, 
+    event: 'App Button Clicked',
+    properties: {
+      button: "Show Weekly Plan",
+      location: location
+    }
+  })
+
   //get the user details
   const slackUserID = body.user.id;
   const slackUserInfo = await usersInfo(slackUserID);
@@ -126,7 +137,6 @@ module.exports = async ({ body, context, ack }) => {
 
   const view = weeklyPlan(practicesFormattedToSend[0], true);
 
-  console.log(practicesFormattedToSend);
 
   viewsOpen({
     token: context.botToken,

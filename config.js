@@ -4,6 +4,8 @@ module.exports= {
     PORT: process.env.PORT,
     AIRTABLE_API_KEY: process.env.AIRTABLE_API_KEY,
     AIRTABLE_BASE_ID: process.env.AIRTABLE_BASE_ID,
-    LOG_LEVEL: process.env.DEBUG_LEVEL,
-    TIMEZONE: process.env.TIMEZONE
+    LOG_LEVEL: process.env.LOG_LEVEL,
+    TIMEZONE: process.env.TIMEZONE,
+    SEGMENT_WRITE_KEY: process.env.SEGMENT_WRITE_KEY
+
 }

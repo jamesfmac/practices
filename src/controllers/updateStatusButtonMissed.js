@@ -1,5 +1,7 @@
 const { updatePracticesLog } = require("../APIs/airtable/practicesLog");
 const { viewsUpdate } = require("../APIs/slack");
+const refreshHome = require("./refreshHome");
+const analytics = require("../APIs/segment");
 
 module.exports = async ({ ack, body, view, context, payload }) => {
   ack();
@@ -7,6 +9,7 @@ module.exports = async ({ ack, body, view, context, payload }) => {
   try {
     const botToken = context.botToken;
     const viewID = body.view.id;
+    const slackUserID = body.user.id;
     const initialView = body.view;
     const initialBlocks = body.view.blocks;
     const affectedBlock = payload.block_id;
@@ -16,8 +19,6 @@ module.exports = async ({ ack, body, view, context, payload }) => {
     );
     const newStatus = "Missed";
 
-  
-
     const resultOfAirtableUpdate = await updatePracticesLog({
       id: recordID,
       fields: {
@@ -26,6 +27,21 @@ module.exports = async ({ ack, body, view, context, payload }) => {
     });
 
     if (resultOfAirtableUpdate) {
+      //refresh home to recalc performance stats
+
+      refreshHome(slackUserID, botToken);
+
+      analytics.track({
+        userId: slackUserID,
+        event: "Practice Missed",
+        properties: {
+          name: resultOfAirtableUpdate[0].fields.PRACTICE_NAME[0],
+          date: resultOfAirtableUpdate[0].fields.Date,
+          project: resultOfAirtableUpdate[0].fields.PROJECT_NAME[0],
+          location: 'update practices modal'
+        }
+      });
+
       //update the modal view if the airtable update is succesful
       const updatedBlocks = await initialView.blocks.map((block, index) => {
         if (index === indexOfActionedPractice) {

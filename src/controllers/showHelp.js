@@ -1,9 +1,5 @@
 module.exports = async ({
-    body,
     ack,
-    context,
-    action,
-    payload,
     say
   }) => {
     try {

@@ -1,13 +1,19 @@
-const refreshHome = require("./refreshHome")
+const refreshHome = require("./refreshHome");
+const analytics = require("../APIs/segment");
 
 module.exports = async context => {
   const slackUserID = context.event.user;
   const token = context.context.botToken;
 
-  refreshHome(slackUserID, token)
+  analytics.track({
+    userId: slackUserID,
+    event: "App Viewed",
+    properties: {
+      tab: context.payload.tab
+    }
+  });
 
- 
-
-
- 
+  if (context.payload.tab == "home") {
+    refreshHome(slackUserID, token);
+  }
 };

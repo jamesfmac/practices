@@ -5,29 +5,22 @@ const {
   scheduleReminders,
   schedulePracticeGeneration,
   scheduleWeeklyPlan,
-  scheduleDailyPlan
+  scheduleDailyPlan,
+  scheduleOverdueReminder
 } = require("./src/schedules");
 
 //scheduleReminders.start(); turning these off to test the response rate
 schedulePracticeGeneration.start();
 scheduleWeeklyPlan.start();
 scheduleDailyPlan.start();
-
-// TODO swtich cron schedules to be explicitly started
-
-// Listener middleware that filters out messages with 'bot_message' subtype
-function noBotMessages({ message, next }) {
-  if (!message.subtype || message.subtype !== "bot_message") {
-    next();
-  }
-}
+scheduleOverdueReminder.start();
 
 //mount routes for Slack actions and commands
 require("./src/routes")(app);
 
 //create a health check endpoint for EB
 
-receiver.app.get("/", (req, res, next) => {
+receiver.app.get("/", (res) => {
   res.json({ status: "Ok" });
   res.status(200).send();
 });

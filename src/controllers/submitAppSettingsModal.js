@@ -1,5 +1,5 @@
 const { updateTeamLeads } = require("../APIs/airtable");
-
+const analytics = require("../APIs/segment")
 module.exports = async ({ ack, payload, body, view }) => {
   try {
     ack();
@@ -16,7 +16,7 @@ module.exports = async ({ ack, payload, body, view }) => {
         "selected_option"
       ]["value"] == "Daily";
 
-    const saveSettingsInAirtable = await updateTeamLeads([
+  updateTeamLeads([
       {
         id: airtableRecordID,
         fields: {
@@ -25,6 +25,16 @@ module.exports = async ({ ack, payload, body, view }) => {
         }
       }
     ]);
+    analytics.track({
+      userId: body.user.id,
+      event: "Settings Updated",
+      properties: {
+        sendDailyReminderSelection: sendDailyReminderSelection,
+        sendDailyPlanSelection: sendDailyPlanSelection
+      }
+    });
+
+
   } catch (error) {
     console.log(error);
   }
