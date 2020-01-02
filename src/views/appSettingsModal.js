@@ -1,8 +1,39 @@
 module.exports = async userSettings => {
-  const sendDailyReminders = userSettings.sendDailyReminders;
-  const sendDailyPlan = userSettings.sendDailyPlan
+  const getInitialOverduePracticesSetting = userSettings => {
+    const overduePracticesSetting = userSettings.overduePracticesReminders;
+    switch (overduePracticesSetting) {
+      case "Daily":
+        return optionDaily;
+        break;
+      case "End of Week":
+        return optionEndOfWeek;
+      default:
+        return optionNever;
+    }
+  };
 
-  const optionDailyReminders = {
+  const getInitialPlannedPracticesSetting = userSettings => {
+    const overduePracticesSetting = userSettings.plannedPracticesReminders;
+
+    console.log(overduePracticesSetting)
+    switch (overduePracticesSetting) {
+      case "Daily":
+        return optionDaily;
+        break;
+      case "Start of Week":
+        return optionStartofWeek;
+      default:
+        return optionNever;
+    }
+  };
+
+
+
+  
+
+  const sendDailyPlan = userSettings.sendDailyPlan;
+
+  const optionDaily = {
     text: {
       type: "plain_text",
       text: "Daily",
@@ -10,24 +41,34 @@ module.exports = async userSettings => {
     },
     value: "Daily"
   };
-
-  const optionWeeklyReminders = {
+  const optionStartofWeek = {
     text: {
       type: "plain_text",
-      text: "Weekly",
+      text: "Start of Week",
       emoji: true
     },
-    value: "Weekly"
+    value: "Start of Week"
   };
-
-  const optionNeverRemind = {
+  const optionEndOfWeek = {
     text: {
       type: "plain_text",
-      text: "Don't remind me",
+      text: "End of Week",
+      emoji: true
+    },
+    value: "End of Week"
+  };
+
+  const optionNever = {
+    text: {
+      type: "plain_text",
+      text: "Never",
       emoji: true
     },
     value: "Never"
   };
+
+
+  console.log(getInitialOverduePracticesSetting(userSettings))
 
   return {
     type: "modal",
@@ -67,11 +108,9 @@ module.exports = async userSettings => {
           type: "static_select",
           action_id: "send-plan-select",
 
-          initial_option: sendDailyPlan
-            ? optionDailyReminders
-            : optionNeverRemind,
+          initial_option: getInitialPlannedPracticesSetting(userSettings),
 
-          options: [optionDailyReminders, optionNeverRemind]
+          options: [optionDaily, optionStartofWeek, optionNever]
         }
       },
       {
@@ -82,16 +121,14 @@ module.exports = async userSettings => {
           text: "Overdue practices reminder",
           emoji: true
         },
-      
+
         element: {
           type: "static_select",
           action_id: "send-reminder-select",
 
-          initial_option: sendDailyReminders
-            ? optionDailyReminders
-            : optionWeeklyReminders,
+          initial_option: getInitialOverduePracticesSetting(userSettings),
 
-          options: [optionDailyReminders, optionWeeklyReminders]
+          options: [optionDaily, optionEndOfWeek, optionNever]
         }
       }
     ]
