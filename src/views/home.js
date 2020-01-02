@@ -130,8 +130,14 @@ module.exports = (
         type: "context",
         elements: [
           {
+            type: "image",
+            image_url:
+              `http://37624a4a.ngrok.io/public/${project.performanceIcon}`,
+            alt_text: "Location Pin Icon"
+          },
+          {
             type: "mrkdwn",
-            text: `>${project.performanceLevel} (${project.percentage})`
+            text: `${project.performanceLevel} (${project.percentage})`
           }
         ]
       }
