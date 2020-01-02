@@ -74,7 +74,7 @@ module.exports = async userSettings => {
     type: "modal",
     title: {
       type: "plain_text",
-      text: "App Settings",
+      text: "Message Settings",
       emoji: true
     },
     callback_id: "submitAppSettingsModal",

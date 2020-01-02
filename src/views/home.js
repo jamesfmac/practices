@@ -15,7 +15,7 @@ module.exports = (
         type: "button",
         text: {
           type: "plain_text",
-          text: "App Settings",
+          text: "Message Settings",
           emoji: true
         },
         action_id: "showAppSettingsModal"
