@@ -59,19 +59,31 @@ const sendReminders = async email => {
 
     const teamLeadsWantingReminders = await getTeamLeads().then(records =>
       records
-        .filter(record => record.get("Send Daily Reminder"))
+        .filter(record => {
+          const userOverduePracticesSettings = record.get(
+            "Overdue Practices Reminder"
+          );
+          return userOverduePracticesSettings
+            ? userOverduePracticesSettings.includes("Daily")
+            : false;
+        })
         .map(record => {
           return record.get("Email Address");
         })
     );
 
-    console.log(teamLeadsWantingReminders);
 
     //get a list of the practices due today, group them by team lead email and shape data
 
     const todaysPractices = await getPracticesLog({
-      afterDate: date.clone().subtract(1, "day").format("YYYY-MM-DD"),
-      beforeDate: date.clone().add(1, "day").format("YYYY-MM-DD"),
+      afterDate: date
+        .clone()
+        .subtract(1, "day")
+        .format("YYYY-MM-DD"),
+      beforeDate: date
+        .clone()
+        .add(1, "day")
+        .format("YYYY-MM-DD"),
       status: "Pending",
       email: userEmail
     });

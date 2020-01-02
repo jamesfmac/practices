@@ -1,5 +1,5 @@
 const { updateTeamLeads } = require("../APIs/airtable");
-const analytics = require("../APIs/segment")
+const analytics = require("../APIs/segment");
 module.exports = async ({ ack, payload, body, view }) => {
   try {
     ack();
@@ -9,19 +9,19 @@ module.exports = async ({ ack, payload, body, view }) => {
     const sendDailyReminderSelection =
       payload.state.values["send-reminder-input"]["send-reminder-select"][
         "selected_option"
-      ]["value"] == "Daily";
+      ]["value"];
 
     const sendDailyPlanSelection =
       payload.state.values["send-plan-input"]["send-plan-select"][
         "selected_option"
-      ]["value"] == "Daily";
+      ]["value"];
 
-  updateTeamLeads([
+    updateTeamLeads([
       {
         id: airtableRecordID,
         fields: {
-          "Send Daily Reminder": sendDailyReminderSelection,
-          "Send Daily Planned Practices": sendDailyPlanSelection
+          "Overdue Practices Reminder": sendDailyReminderSelection,
+          "Planned Practices Reminder": sendDailyPlanSelection
         }
       }
     ]);
@@ -29,12 +29,10 @@ module.exports = async ({ ack, payload, body, view }) => {
       userId: body.user.id,
       event: "Settings Updated",
       properties: {
-        sendDailyReminderSelection: sendDailyReminderSelection,
-        sendDailyPlanSelection: sendDailyPlanSelection
+        "Overdue Practices Reminder": sendDailyReminderSelection,
+        "Planned Practices Reminder": sendDailyPlanSelection
       }
     });
-
-
   } catch (error) {
     console.log(error);
   }
