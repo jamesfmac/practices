@@ -33,9 +33,9 @@ module.exports = async (slackUserID, token) => {
       return "Poor Practices";
     } else if (percentage < 0.6) {
       return "Some Practices";
-    } else if (percentage < 0.8) {
+    } else if (percentage < 0.75) {
       return "Ok Practices";
-    } else if (percentage < 0.95) {
+    } else if (percentage < 0.90) {
       return "Great Practices";
     } else {
       return "No practices";
@@ -47,9 +47,9 @@ module.exports = async (slackUserID, token) => {
       return "frowning-emoticon-square-face.png";
     } else if (percentage < 0.6) {
       return "neutral-emoticon-square-face.png";
-    } else if (percentage < 0.8) {
+    } else if (percentage < 0.75) {
       return "smiling-emoticon-square-face.png";
-    } else if (percentage < 0.95) {
+    } else if (percentage < 0.90) {
       return "big-smile-emoticon-square-face.png";
     }
   };
