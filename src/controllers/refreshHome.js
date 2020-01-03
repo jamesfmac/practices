@@ -33,12 +33,24 @@ module.exports = async (slackUserID, token) => {
       return "Poor Practices";
     } else if (percentage < 0.6) {
       return "Some Practices";
-    } else if (percentage < 0.8) {
+    } else if (percentage < 0.75) {
       return "Ok Practices";
-    } else if (percentage < 0.95) {
+    } else if (percentage < 0.90) {
       return "Great Practices";
     } else {
       return "No practices";
+    }
+  };
+
+  const mapPercentageToIcon = percentage => {
+    if (percentage < 0.2) {
+      return "frowning-emoticon-square-face.png";
+    } else if (percentage < 0.6) {
+      return "neutral-emoticon-square-face.png";
+    } else if (percentage < 0.75) {
+      return "smiling-emoticon-square-face.png";
+    } else if (percentage < 0.90) {
+      return "big-smile-emoticon-square-face.png";
     }
   };
 
@@ -67,7 +79,6 @@ module.exports = async (slackUserID, token) => {
     beforeDate: tomorrow
   });
 
-
   const formattedAppliedPractices = appliedPractices.map(record => {
     return {
       id: record.id,
@@ -87,6 +98,7 @@ module.exports = async (slackUserID, token) => {
     });
 
     const performanceLevel = mapPercentageToPerformanceLevel(percentage);
+    const performanceIcon = mapPercentageToIcon(percentage);
 
     return {
       id: record.id,
@@ -95,7 +107,8 @@ module.exports = async (slackUserID, token) => {
       overdue: record.fields.OVERDUE,
       missed: record.fields.MISSED,
       percentage: percentageString,
-      performanceLevel: performanceLevel
+      performanceLevel: performanceLevel,
+      performanceIcon: performanceIcon
     };
   });
 

@@ -2,14 +2,10 @@ const { TIMEZONE } = require("../../config");
 const moment = require("moment-timezone");
 const { weeklyPlan } = require("../views");
 const { chatPostDM, usersLookupByEmail } = require("../APIs/slack");
-const { getPracticesLog } = require("../APIs/airtable");
+const { getPracticesLog, getTeamLeads } = require("../APIs/airtable");
 
 module.exports = async email => {
   const userEmail = email || null;
-
-  const teamLeadEmailFilter = userEmail
-    ? `Team_Lead_Email="${userEmail}"`
-    : null;
 
   //define date range for the current week
 
@@ -81,8 +77,6 @@ module.exports = async email => {
 
     const slackUserID = slackUser.ok ? slackUser.user.id : null;
 
-    console.log("slackUser", slackUserID);
-
     const dailyPractices = group.practices.filter(
       practice => practice.schedule == "Daily"
     );
@@ -128,7 +122,19 @@ module.exports = async email => {
 
   for (const message of practicesFormattedToSend) {
     console.log(`Sending weekly plan to ${message.email}`);
-    const view = weeklyPlan(message);
-    await chatPostDM(message.email, view.text, view.blocks);
+
+    const teamLead = await getTeamLeads(message.email);
+
+    const userPlannedPracticesSettings =
+      teamLead[0].fields["Planned Practices Reminder"];
+
+    const userWantsWeeklyPlan = userPlannedPracticesSettings
+      ? userPlannedPracticesSettings.includes("Start of Week")
+      : false;
+
+    if (userWantsWeeklyPlan) {
+      const view = weeklyPlan(message);
+      await chatPostDM(message.email, view.text, view.blocks);
+    }
   }
 };

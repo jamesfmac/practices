@@ -1,6 +1,8 @@
 const { PORT } = require("./config");
 const { app, receiver } = require("./src/bolt");
 
+const express = require("express");
+
 const {
   scheduleReminders,
   schedulePracticeGeneration,
@@ -20,9 +22,12 @@ require("./src/routes")(app);
 
 //create a health check endpoint for EB
 
-receiver.app.get("/", (res) => {
-  res.json({ status: "Ok" });
-  res.status(200).send();
+receiver.app.use('/public', express.static('icons'))
+
+receiver.app.get("/", function(req, res, next) {
+  res.status(200)
+  res.json({ status: "UP" });
+  
 });
 
 (async () => {

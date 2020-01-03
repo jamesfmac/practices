@@ -18,8 +18,9 @@ module.exports = async ({ body, context, ack }) => {
         name: record.fields.Name,
         email: record.fields["Email Address"],
         isAdmin: record.fields["Practices Admin"],
-        sendDailyReminders: record.fields["Send Daily Reminder"],
-        sendDailyPlan: record.fields["Send Daily Planned Practices"]
+        plannedPracticesReminders: record.fields["Planned Practices Reminder"],
+        overduePracticesReminders: record.fields["Overdue Practices Reminder"],
+
       };
     });
 
