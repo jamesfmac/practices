@@ -44,7 +44,7 @@ module.exports = async (slackUserID, practices, isForModal) => {
         elements: [
           {
             type: "mrkdwn",
-            text: `:ledger: ${projectsListPrefix} ${projectList}`,
+            text: `>${projectsListPrefix} ${projectList}`,
             verbatim: false
           }
         ]

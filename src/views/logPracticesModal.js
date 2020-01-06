@@ -1,6 +1,6 @@
 const moment = require("moment-timezone");
 
-module.exports = async practices => {
+module.exports = async (practices, listOfPracticeIDs) => {
   const dayBlocks = practices.map(dayGroup => {
     const dateHeading = [
       {
@@ -33,7 +33,7 @@ module.exports = async practices => {
             },
             {
               type: "mrkdwn",
-              text: `*Status* Pending`,
+              text: `*Status* ${practice.status}`,
               verbatim: false
             }
           ]
@@ -45,22 +45,22 @@ module.exports = async practices => {
               type: "button",
               text: {
                 type: "plain_text",
-                text: "Completed ",
+                text: `${practice.status == 'Completed'? `:white_check_mark:` : ``} Completed` ,
                 emoji: true
               },
-              action_id: 'updateStatusButtonComplete',
-              value: `${practice.id}`,
+              action_id: "updateStatusButtonComplete",
+              value: `${practice.id}-Completed`,
               style: "primary"
             },
             {
               type: "button",
               text: {
                 type: "plain_text",
-                text: "Missed",
+                text: `${practice.status == 'Missed'? `:white_check_mark:` : ``} Missed`,
                 emoji: true
               },
-              action_id: 'updateStatusButtonMissed',
-              value: `${practice.id}`
+              action_id: "updateStatusButtonMissed",
+              value:  `${practice.id}-Missed`,
             }
           ]
         }
@@ -97,6 +97,7 @@ module.exports = async practices => {
       text: "Finished",
       emoji: true
     },
-    blocks: blocks
+    blocks: blocks,
+    private_metadata: listOfPracticeIDs.toString(",")
   };
 };

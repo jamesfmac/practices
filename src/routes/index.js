@@ -10,8 +10,7 @@ const {
   showLogPracticesModal,
   setPracticeStatusFromModal,
   sendWeeklyPlan,
-  updateStatusButtonComplete,
-  updateStatusButtonMissed,
+  handleStatusUpdateButton,
   appHomeOpened,
   showWeeklyPlanModal,
   showAppSettingsModal,
@@ -41,9 +40,9 @@ module.exports = function(app) {
 
   app.action("setPracticeStatusFromModal", setPracticeStatusFromModal);
 
-  app.action("updateStatusButtonComplete", updateStatusButtonComplete);
+  app.action("updateStatusButtonComplete", handleStatusUpdateButton);
 
-  app.action("updateStatusButtonMissed", updateStatusButtonMissed);
+  app.action("updateStatusButtonMissed", handleStatusUpdateButton);
 
   app.view("feedback", submitFeedbackModal);
 
