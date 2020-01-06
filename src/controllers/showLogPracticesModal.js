@@ -3,6 +3,7 @@ const { logPracticesModal } = require("../views");
 const { TIMEZONE } = require("../../config");
 const moment = require("moment-timezone");
 const { viewsOpen, usersInfo } = require("../APIs/slack");
+const formatPracticesForLogPracticesModal = require("./formatPracticesForLogPracticesModal");
 
 module.exports = async ({ body, context, ack, say }) => {
   ack();
@@ -36,20 +37,14 @@ module.exports = async ({ body, context, ack, say }) => {
       sort: [{ field: "Date", direction: "desc" }]
     });
 
-    //group practices by date
-
-    const uniqueDates = getUniqueDates(practices);
-
-    const practicesGroupedByDate = await uniqueDates.map(date => {
-      return {
-        date: date,
-        practices: groupPracticesByDate(practices, date)
-      };
-    });
-
     //get view
 
-    const view = await logPracticesModal(practicesGroupedByDate);
+    const formattedPractices =await  formatPracticesForLogPracticesModal(practices)
+    
+    const view = await logPracticesModal(
+      formattedPractices.practicesGroupedByDate,
+      formattedPractices.listOfPracticeIDs
+    );
 
     //open view
 
@@ -63,29 +58,8 @@ module.exports = async ({ body, context, ack, say }) => {
   }
 };
 
-const groupPracticesByDate = (list, date) => {
-  return (
-    list
-      //  filter out items not matching date
-      .filter(item => {
-        return item.fields.Date === date;
-      })
-      //  map the practice to the desired shape
-      .map(record => {
-        return {
-          id: record.id,
-          email: record.fields.TEAM_LEAD_EMAIL[0],
-          practice: record.fields.PRACTICE_NAME[0],
-          project: record.fields.PROJECT_NAME[0],
-          date: moment(record.fields.Date).format("dddd, Do MMM"),
-          status: record.fields.Status
-        };
-      })
-  );
-};
 
-const getUniqueDates = list => {
-  return list
-    .map(item => item.fields.Date)
-    .filter((date, index, all) => all.indexOf(date) === index);
-};
+
+
+
+

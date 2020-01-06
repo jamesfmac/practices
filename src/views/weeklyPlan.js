@@ -46,7 +46,7 @@ module.exports = (data, isForModal) => {
         elements: [
           {
             type: "mrkdwn",
-            text: `:ledger: *Projects:* ${projectList}`,
+            text: `*Projects:* ${projectList}`,
             verbatim: false
           }
         ]
@@ -80,7 +80,7 @@ module.exports = (data, isForModal) => {
             type: "section",
             text: {
               type: "mrkdwn",
-              text: `${practice.name}`,
+              text: `:ledger: ${practice.name}`,
               verbatim: false
             }
           },
@@ -89,7 +89,7 @@ module.exports = (data, isForModal) => {
             elements: [
               {
                 type: "mrkdwn",
-                text: `:ledger: *Project:* ${practice.project} `,
+                text: `> *Project:* ${practice.project} `,
                 verbatim: false
               }
             ]

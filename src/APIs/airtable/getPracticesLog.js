@@ -12,7 +12,8 @@ module.exports = async searchCriteria => {
     afterDate,
     beforeDate,
     maxRecords,
-    sort
+    sort,
+    customFilter
   } = searchCriteria;
 
   const todaysDate = moment().tz(TIMEZONE);
@@ -40,10 +41,12 @@ module.exports = async searchCriteria => {
     ? `Status = "${searchCriteria.status}"`
     : `Status !=""`;
 
-  const combinedFilters = afterDateFilter
-    .concat(", ", emailFilter)
-    .concat(", ", beforeDateFilter)
-    .concat(", ", statusFilter);
+  const combinedFilters = customFilter
+    ? customFilter
+    : afterDateFilter
+        .concat(", ", emailFilter)
+        .concat(", ", beforeDateFilter)
+        .concat(", ", statusFilter);
 
   const finalFilter = `AND(Practice!="", ${combinedFilters})`;
 
@@ -71,7 +74,7 @@ module.exports = async searchCriteria => {
       return error;
     });
 
-    //ToDO figure out how to normalise practice instance data across the app
+  //ToDO figure out how to normalise practice instance data across the app
 
   return matchingPractices;
 };

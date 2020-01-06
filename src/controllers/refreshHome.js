@@ -27,15 +27,16 @@ module.exports = async (slackUserID, token) => {
   };
 
   const mapPercentageToPerformanceLevel = percentage => {
+ 
     if (percentage < 0.1) {
       return "Minimal Practices";
     } else if (percentage < 0.4) {
       return "Poor Practices";
     } else if (percentage < 0.6) {
       return "Some Practices";
-    } else if (percentage < 0.75) {
+    } else if (percentage < 0.85) {
       return "Ok Practices";
-    } else if (percentage < 0.90) {
+    } else if (percentage < 1.0) {
       return "Great Practices";
     } else {
       return "No practices";
@@ -43,13 +44,13 @@ module.exports = async (slackUserID, token) => {
   };
 
   const mapPercentageToIcon = percentage => {
-    if (percentage < 0.2) {
+    if (percentage < 0.4) {
       return "frowning-emoticon-square-face.png";
     } else if (percentage < 0.6) {
       return "neutral-emoticon-square-face.png";
-    } else if (percentage < 0.75) {
+    } else if (percentage < 0.85) {
       return "smiling-emoticon-square-face.png";
-    } else if (percentage < 0.90) {
+    } else if (percentage < 1.0) {
       return "big-smile-emoticon-square-face.png";
     }
   };
