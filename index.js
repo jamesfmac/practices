@@ -11,7 +11,7 @@ const {
   scheduleOverdueReminder
 } = require("./src/schedules");
 
-//scheduleReminders.start(); turning these off to test the response rate
+scheduleReminders.start(); 
 schedulePracticeGeneration.start();
 scheduleWeeklyPlan.start();
 scheduleDailyPlan.start();

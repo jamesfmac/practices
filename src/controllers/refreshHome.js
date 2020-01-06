@@ -44,7 +44,7 @@ module.exports = async (slackUserID, token) => {
   };
 
   const mapPercentageToIcon = percentage => {
-    if (percentage < 0.2) {
+    if (percentage < 0.4) {
       return "frowning-emoticon-square-face.png";
     } else if (percentage < 0.6) {
       return "neutral-emoticon-square-face.png";
