@@ -1,6 +1,7 @@
 const { getTeamLeads } = require("../APIs/airtable");
 const { usersLookupByEmail, chatPostDM } = require("../APIs/slack");
 const generateDailyPlan = require("../controllers/generateDailyPlan"); //importing directly to get around a loading order issue
+const analytics = require("../APIs/segment");
 
 module.exports = async () => {
   try {
@@ -28,11 +29,23 @@ module.exports = async () => {
           isForModal: false
         });
 
-        chatPostDM(
+        const chatPostResult = await chatPostDM(
           dailyPlan.userEmail,
           dailyPlan.view.text,
           dailyPlan.view.blocks
         );
+
+        chatPostResult.ok
+          ? analytics.track({
+            userId: slackUserID,
+            event: `Message Recieved`,
+            properties: {
+              message: 'Daily Plan'
+            }
+          })
+          : null;
+
+    
       }
     }
   } catch (error) {

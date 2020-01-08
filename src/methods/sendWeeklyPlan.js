@@ -3,6 +3,7 @@ const moment = require("moment-timezone");
 const { weeklyPlan } = require("../views");
 const { chatPostDM, usersLookupByEmail } = require("../APIs/slack");
 const { getPracticesLog, getTeamLeads } = require("../APIs/airtable");
+const analytics = require("../APIs/segment")
 
 module.exports = async email => {
   const userEmail = email || null;
@@ -134,7 +135,21 @@ module.exports = async email => {
 
     if (userWantsWeeklyPlan) {
       const view = weeklyPlan(message);
-      await chatPostDM(message.email, view.text, view.blocks);
+      const chatPostResult = await chatPostDM(
+        message.email,
+        view.text,
+        view.blocks
+      );
+
+      chatPostResult.ok
+        ? analytics.track({
+            userId: message.slackID,
+            event: `Message Recieved`,
+            properties: {
+              message: "Weekly Plan"
+            }
+          })
+        : null;
     }
   }
 };

@@ -34,8 +34,6 @@ module.exports = async ({ payload, body, context, next, say, ack }) => {
       context.isPbPAdmin = teamLead[0].get("Practices Admin");
       context.PbPRecordID = teamLead[0].id;
 
-      console.log("team lead found");
-
       updateTeamLeads([
         {
           id: teamLead[0].id,
