@@ -4,8 +4,9 @@ const { TIMEZONE } = require("../../config");
 const moment = require("moment-timezone");
 const { viewsOpen, usersInfo } = require("../APIs/slack");
 const formatPracticesForLogPracticesModal = require("./formatPracticesForLogPracticesModal");
+const analytics = require("../APIs/segment");
 
-module.exports = async ({ body, context, ack, say }) => {
+module.exports = async ({ body, context, ack }) => {
   ack();
   try {
     //set up date ranges
@@ -25,7 +26,7 @@ module.exports = async ({ body, context, ack, say }) => {
       .format("YYYY-MM-DD");
 
     const slackUserInfo = await usersInfo(body.user.id);
-
+    const location = body.view ? body.view.type : body.channel.name;
     //get matching practice instances from Airtable
 
     const practices = await getPracticesLog({
@@ -39,8 +40,19 @@ module.exports = async ({ body, context, ack, say }) => {
 
     //get view
 
-    const formattedPractices =await  formatPracticesForLogPracticesModal(practices)
-    
+    const formattedPractices = await formatPracticesForLogPracticesModal(
+      practices
+    );
+
+    analytics.track({
+      userId: body.user.id,
+      event: "App Button Clicked",
+      properties: {
+        button: "Update Practices",
+        location: location
+      }
+    });
+
     const view = await logPracticesModal(
       formattedPractices.practicesGroupedByDate,
       formattedPractices.listOfPracticeIDs
@@ -57,9 +69,3 @@ module.exports = async ({ body, context, ack, say }) => {
     console.log("viewsOpen", error);
   }
 };
-
-
-
-
-
-

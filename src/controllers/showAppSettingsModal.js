@@ -11,7 +11,7 @@ module.exports = async ({ body, context, ack }) => {
 
     const userEmail = context.userEmail;
     const teamLeadInfo = await getTeamLeads(userEmail);
-
+    const location = body.view ? body.view.type : body.channel.name;
     const formattedSettings = teamLeadInfo.map(record => {
       return {
         id: record.id,
@@ -19,8 +19,7 @@ module.exports = async ({ body, context, ack }) => {
         email: record.fields["Email Address"],
         isAdmin: record.fields["Practices Admin"],
         plannedPracticesReminders: record.fields["Planned Practices Reminder"],
-        overduePracticesReminders: record.fields["Overdue Practices Reminder"],
-
+        overduePracticesReminders: record.fields["Overdue Practices Reminder"]
       };
     });
 
@@ -33,9 +32,12 @@ module.exports = async ({ body, context, ack }) => {
     });
     analytics.track({
       userId: context.slackUserID,
-      event: "Settings Viewed"
+      event: "App Button Clicked",
+      properties: {
+        button: "Message Settings",
+        location: location
+      }
     });
-
   } catch (error) {
     console.error(error);
   }

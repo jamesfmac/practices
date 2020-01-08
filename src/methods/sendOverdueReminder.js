@@ -1,7 +1,7 @@
 const { getTeamLeads } = require("../APIs/airtable");
 const { chatPostDM } = require("../APIs/slack");
 const generateOverdueReminder = require("../controllers/generateOverdueReminder"); //importing directly to get around a loading order issue
-
+const analytics = require("../APIs/segment");
 module.exports = async () => {
   try {
     const teamLeadsWantingReminders = await getTeamLeads(null).then(records =>
@@ -17,18 +17,25 @@ module.exports = async () => {
 
     for (const teamLead of teamLeadsWantingReminders) {
       const userEmail = teamLead.fields["Email Address"];
-      const userOverduePracticesSettings =
-        teamLead.fields["Overdue Practices Reminder"];
 
-      console.log("Checking overdue practices for ", userEmail);
       const reminder = await generateOverdueReminder(userEmail);
 
       if (reminder.slackUserID && reminder.practices.length > 0) {
-        chatPostDM(
+        const chatPostResult = await chatPostDM(
           reminder.userEmail,
           reminder.view.text,
           reminder.view.blocks
         );
+
+        chatPostResult.ok
+          ? analytics.track({
+              userId: reminder.slackUserID,
+              event: `Message Recieved`,
+              properties: {
+                message: "End of Week Overdue Reminder"
+              }
+            })
+          : null;
       } else {
         console.log("No reminder needed for", userEmail);
       }

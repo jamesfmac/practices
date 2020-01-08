@@ -1,8 +1,8 @@
-const { AIRTABLE_BASE_ID, TIMEZONE } = require("../../config");
-const base = require("airtable").base(AIRTABLE_BASE_ID);
+const { TIMEZONE } = require("../../config");
 const moment = require("moment-timezone");
+const analytics = require("../APIs/segment");
 
-const { chatPostDM } = require("../APIs/slack");
+const { chatPostDM, usersLookupByEmail } = require("../APIs/slack");
 const { getPracticesLog, getTeamLeads } = require("../APIs/airtable");
 
 const { practicesReminderInline } = require("../views");
@@ -35,13 +35,31 @@ const getListOfUniqueTeamLeads = list => {
 
 const createAndDispatchSlackDMs = async groupedPractices => {
   for (const group of groupedPractices) {
-    console.log(
-      `Sending ${group.practices.length} practices to ${group.email}`
-    );
+    const slackUser = await usersLookupByEmail(group.email);
+    const slackUserID = slackUser.ok ? slackUser.user.id : false;
 
-    const blockkitMessage = await practicesReminderInline(group);
+    if (slackUserID) {
+      console.log(
+        `Sending ${group.practices.length} practices to ${group.email}`
+      );
 
-    await chatPostDM(group.email, blockkitMessage.text, blockkitMessage.blocks);
+      const blockkitMessage = await practicesReminderInline(group);
+      const chatPostResult = await chatPostDM(
+        group.email,
+        blockkitMessage.text,
+        blockkitMessage.blocks
+      );
+
+      if (chatPostResult.ok) {
+        analytics.track({
+          userId: slackUserID,
+          event: `Message Recieved`,
+          properties: {
+            message: "Daily Overdue Reminder"
+          }
+        });
+      }
+    }
   }
 };
 
@@ -71,7 +89,6 @@ const sendReminders = async email => {
           return record.get("Email Address");
         })
     );
-
 
     //get a list of the practices due today, group them by team lead email and shape data
 
@@ -112,7 +129,7 @@ const sendReminders = async email => {
 
     //Create and send the Slack messages
 
-    const sendMessages = createAndDispatchSlackDMs(formattedTodaysPractices);
+    createAndDispatchSlackDMs(formattedTodaysPractices);
 
     return formattedTodaysPractices;
   } catch (error) {

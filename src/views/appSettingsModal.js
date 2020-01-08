@@ -15,7 +15,6 @@ module.exports = async userSettings => {
   const getInitialPlannedPracticesSetting = userSettings => {
     const overduePracticesSetting = userSettings.plannedPracticesReminders;
 
-    console.log(overduePracticesSetting)
     switch (overduePracticesSetting) {
       case "Daily":
         return optionDaily;
@@ -66,9 +65,6 @@ module.exports = async userSettings => {
     },
     value: "Never"
   };
-
-
-  console.log(getInitialOverduePracticesSetting(userSettings))
 
   return {
     type: "modal",
