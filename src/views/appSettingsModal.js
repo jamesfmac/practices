@@ -1,12 +1,15 @@
 module.exports = async userSettings => {
   const getInitialOverduePracticesSetting = userSettings => {
     const overduePracticesSetting = userSettings.overduePracticesReminders;
-    switch (overduePracticesSetting) {
+
+    switch (overduePracticesSetting.toString()) {
       case "Daily":
         return optionDaily;
         break;
       case "End of Week":
         return optionEndOfWeek;
+      case "Daily,End of Week":
+        return optionEoWAndDaily;
       default:
         return optionNever;
     }
@@ -15,22 +18,18 @@ module.exports = async userSettings => {
   const getInitialPlannedPracticesSetting = userSettings => {
     const overduePracticesSetting = userSettings.plannedPracticesReminders;
 
-    switch (overduePracticesSetting) {
+    switch (overduePracticesSetting.toString()) {
       case "Daily":
         return optionDaily;
         break;
       case "Start of Week":
         return optionStartofWeek;
+      case "Daily,Start of Week":
+        return optionSoWAndDaily;
       default:
         return optionNever;
     }
   };
-
-
-
-  
-
-  const sendDailyPlan = userSettings.sendDailyPlan;
 
   const optionDaily = {
     text: {
@@ -55,6 +54,23 @@ module.exports = async userSettings => {
       emoji: true
     },
     value: "End of Week"
+  };
+
+  const optionEoWAndDaily = {
+    text: {
+      type: "plain_text",
+      text: "End of Week + Daily",
+      emoji: true
+    },
+    value: "EOW+Daily"
+  };
+  const optionSoWAndDaily = {
+    text: {
+      type: "plain_text",
+      text: "Start of Week + Daily",
+      emoji: true
+    },
+    value: "SOW+Daily"
   };
 
   const optionNever = {
@@ -106,7 +122,12 @@ module.exports = async userSettings => {
 
           initial_option: getInitialPlannedPracticesSetting(userSettings),
 
-          options: [optionDaily, optionStartofWeek, optionNever]
+          options: [
+            optionSoWAndDaily,
+            optionDaily,
+            optionStartofWeek,
+            optionNever
+          ]
         }
       },
       {
@@ -124,7 +145,12 @@ module.exports = async userSettings => {
 
           initial_option: getInitialOverduePracticesSetting(userSettings),
 
-          options: [optionDaily, optionEndOfWeek, optionNever]
+          options: [
+            optionEoWAndDaily,
+            optionDaily,
+            optionEndOfWeek,
+            optionNever
+          ]
         }
       }
     ]

@@ -6,15 +6,32 @@ module.exports = async ({ ack, payload, body, view }) => {
 
     const airtableRecordID = view.private_metadata;
 
-    const sendDailyReminderSelection =
+    const sendDailyReminderSelection = [
       payload.state.values["send-reminder-input"]["send-reminder-select"][
         "selected_option"
-      ]["value"];
+      ]["value"]
+    ]
+      .map(selection =>
+        selection == "EOW+Daily" ? ["Daily", "End of Week"] : [selection]
+      )
+      .reduce((final, value) => {
+        return final.concat(value);
+      }, []);
 
-    const sendDailyPlanSelection =
+    const sendDailyPlanSelection = [
       payload.state.values["send-plan-input"]["send-plan-select"][
         "selected_option"
-      ]["value"];
+      ]["value"]
+    ]
+      .map(selection => {
+        console.log("selection", selection);
+        return selection == "SOW+Daily"
+          ? ["Daily", "Start of Week"]
+          : [selection];
+      })
+      .reduce((final, value) => {
+        return final.concat(value);
+      }, []);
 
     updateTeamLeads([
       {
