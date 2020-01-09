@@ -1,3 +1,4 @@
+const {URL_ROOT} = require("../../config")
 module.exports = (
   slackUserID,
   appliedPracticesGroupedByProject,
@@ -132,7 +133,7 @@ module.exports = (
           {
             type: "image",
             image_url:
-              `http://37624a4a.ngrok.io/public/${project.performanceIcon}`,
+              `${URL_ROOT}/public/${project.performanceIcon}`,
             alt_text: "Location Pin Icon"
           },
           {
