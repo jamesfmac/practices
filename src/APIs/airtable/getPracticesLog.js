@@ -22,7 +22,7 @@ module.exports = async searchCriteria => {
   const defaultAfterDate = todaysDate.subtract(1, "day").format("YYYY-MM-DD");
   const defaultBeforeDate = todaysDate.add(1, "month").format("YYYY-MM-DD");
   const defaultSort = [{ field: "Practice Instance ID", direction: "desc" }];
-  const defaultMaxRecords = 100;
+  const defaultMaxRecords = 1000;
 
   //create search filter
   const afterDateFilter = afterDate

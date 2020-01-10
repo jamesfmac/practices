@@ -27,7 +27,6 @@ module.exports = async (slackUserID, token) => {
   };
 
   const mapPercentageToPerformanceLevel = percentage => {
- 
     if (percentage < 0.1) {
       return "Minimal Practices";
     } else if (percentage < 0.4) {
@@ -73,12 +72,41 @@ module.exports = async (slackUserID, token) => {
   const appliedPractices = await getAppliedPractices(userEmail);
   const projects = await getProjects(userEmail);
 
-  const pendingPractices = await getPracticesLog({
+  const allPractices = await getPracticesLog({
     email: userEmail,
-    status: "Pending",
     afterDate: oneYearAgo,
     beforeDate: tomorrow
   });
+
+  function calcPerformanceStats(
+    project,
+    practices,
+    startDate = oneYearAgo,
+    endDate = tomorrow
+  ) {
+    const completedPractices = practices.filter(practice => {
+      return (
+        practice.fields.PROJECT_NAME == project &&
+        practice.fields.Status == "Completed" &&
+        moment(practice.fields.Date).isBetween(startDate, endDate)
+      );
+    });
+
+    const totalPractices = practices.filter(practice => {
+      return (
+        practice.fields.PROJECT_NAME == project &&
+        moment(practice.fields.Date).isBetween(startDate, endDate)
+      );
+    });
+
+    return completedPractices.length / totalPractices.length;
+  }
+
+  console.log(calcPerformanceStats("MYOB", allPractices));
+
+  const pendingPractices = allPractices.filter(
+    practice => practice.fields.Status == "Pending"
+  );
 
   const formattedAppliedPractices = appliedPractices.map(record => {
     return {
@@ -93,13 +121,22 @@ module.exports = async (slackUserID, token) => {
 
   const formattedProjects = await projects.map(record => {
     //define good/bad practice brackets here use a case statement probably
-    const percentage = record.fields.PERCENTAGE_PRACTICES_COMPLETE;
-    const percentageString = percentage.toLocaleString(undefined, {
-      style: "percent"
-    });
 
-    const performanceLevel = mapPercentageToPerformanceLevel(percentage);
-    const performanceIcon = mapPercentageToIcon(percentage);
+    const formatNumberToPercentageString = number => {
+      number.toLocaleString(undefined, {
+        style: "percent"
+      });
+    };
+
+    const overallPeformanceScore = calcPerformanceStats(
+      record.fields.Name,
+      allPractices
+    );
+
+    const performanceLevel = mapPercentageToPerformanceLevel(
+      overallPeformanceScore
+    );
+    const performanceIcon = mapPercentageToIcon(overallPeformanceScore);
 
     return {
       id: record.id,
@@ -107,9 +144,10 @@ module.exports = async (slackUserID, token) => {
       completed: record.fields.COMPLETED,
       overdue: record.fields.OVERDUE,
       missed: record.fields.MISSED,
-      percentage: percentageString,
+      percentage: formatNumberToPercentageString(overallPeformanceScore),
       performanceLevel: performanceLevel,
-      performanceIcon: performanceIcon
+      performanceIcon: performanceIcon,
+      lastWeeksPerformanceLevel: dfd
     };
   });
 
@@ -128,7 +166,6 @@ module.exports = async (slackUserID, token) => {
   viewsPublish({
     token: token,
     user_id: slackUserID,
-
     blocks: view.blocks
   });
 };

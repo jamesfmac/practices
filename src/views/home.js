@@ -1,22 +1,59 @@
-const {URL_ROOT} = require("../../config")
+const { URL_ROOT } = require("../../config");
 module.exports = (
   slackUserID,
   appliedPracticesGroupedByProject,
   projects,
   pendingPractices
 ) => {
+  const tabs = [
+    {
+      type: "actions",
+      elements: [
+        {
+          type: "button",
+          text: {
+            type: "plain_text",
+            text: "Playbook Scorecard",
+            emoji: true
+          },
+
+          action_id: "open_practices_log",
+          style: "primary"
+        },
+        {
+          type: "button",
+          text: {
+            type: "plain_text",
+            text: "Schedule",
+            emoji: true
+          },
+          action_id: "openWeekyPLan"
+        },
+        {
+          type: "button",
+          text: {
+            type: "plain_text",
+            text: "Projects",
+            emoji: true
+          },
+          action_id: "openTodaysPractices"
+        }
+      ]
+    }
+  ];
+
   const heading = [
     {
       type: "section",
       text: {
         type: "mrkdwn",
-        text: "*Dashboard*"
+        text: "*Playbook Scorecard*"
       },
       accessory: {
         type: "button",
         text: {
           type: "plain_text",
-          text: "Message Settings",
+          text: "Settings",
           emoji: true
         },
         action_id: "showAppSettingsModal"
@@ -124,21 +161,24 @@ module.exports = (
         type: "section",
         text: {
           type: "mrkdwn",
-          text: `${project.name}`
+          text: `*${project.name}*`
         }
       },
       {
         type: "context",
         elements: [
           {
-            type: "image",
-            image_url:
-              `${URL_ROOT}/public/${project.performanceIcon}`,
-            alt_text: "Location Pin Icon"
-          },
+            type: "mrkdwn",
+            text: `*${project.percentage} Total Score* _(${project.performanceLevel})_`
+          }
+        ]
+      },
+      {
+        type: "context",
+        elements: [
           {
             type: "mrkdwn",
-            text: `${project.performanceLevel} (${project.percentage})`
+            text: `Jan 3rd - Feb 10th:  ${project.percentage}`
           }
         ]
       }
@@ -195,8 +235,8 @@ module.exports = (
   const combinedBlocks = []
     .concat(...heading)
     .concat(...projectStats)
-    .concat(...actions)
     .concat(...overduePracticesNoticeSM)
+    .concat(...actions)
     .concat(...activeProjectsHeading)
     .concat(...activeProjects);
 
