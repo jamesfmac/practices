@@ -1,46 +1,11 @@
 const { URL_ROOT } = require("../../config");
-module.exports = (
+const moment = require("moment-timezone");
+module.exports = async(
   slackUserID,
   appliedPracticesGroupedByProject,
   projects,
   pendingPractices
 ) => {
-  const tabs = [
-    {
-      type: "actions",
-      elements: [
-        {
-          type: "button",
-          text: {
-            type: "plain_text",
-            text: "Playbook Scorecard",
-            emoji: true
-          },
-
-          action_id: "open_practices_log",
-          style: "primary"
-        },
-        {
-          type: "button",
-          text: {
-            type: "plain_text",
-            text: "Schedule",
-            emoji: true
-          },
-          action_id: "openWeekyPLan"
-        },
-        {
-          type: "button",
-          text: {
-            type: "plain_text",
-            text: "Projects",
-            emoji: true
-          },
-          action_id: "openTodaysPractices"
-        }
-      ]
-    }
-  ];
 
   const heading = [
     {
@@ -178,7 +143,16 @@ module.exports = (
         elements: [
           {
             type: "mrkdwn",
-            text: `Jan 3rd - Feb 10th:  ${project.percentage}`
+            text: `${project.currentWeekPeformance.weekStartDate.format('Do MMM')} - Today:  ${project.currentWeekPeformance.performance}`
+          }
+        ]
+      },
+      {
+        type: "context",
+        elements: [
+          {
+            type: "mrkdwn",
+            text: `${project.previousWeekPeformance.weekStartDate.format('Do MMM')} - ${project.previousWeekPeformance.weekEndDate.format('Do MMM')}:  ${project.previousWeekPeformance.performance}`
           }
         ]
       }
@@ -190,7 +164,7 @@ module.exports = (
       type: "section",
       text: {
         type: "mrkdwn",
-        text: "*Project Settings*"
+        text: "*Active Projects*"
       }
     },
     {
@@ -222,13 +196,7 @@ module.exports = (
         elements: practicesContextArray
       }
     ];
-
-    const divider = [
-      {
-        type: "divider"
-      }
-    ];
-
+    
     return [...projectTitle].concat(...activePractices);
   });
 

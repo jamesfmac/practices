@@ -67,6 +67,11 @@ module.exports = async (slackUserID, token) => {
     .subtract(1, "year")
     .format("YYYY-MM-DD");
 
+  const startOfWeek = today.clone().startOf("isoWeek");
+  const endOfWeek = today.clone().endOf("isoWeek");
+  const startOfPreviousWeek = startOfWeek.clone().subtract(1, "week");
+  const endOfPreviousWeek = endOfWeek.clone().subtract(1, "week");
+
   const slackUserInfo = await usersInfo(slackUserID);
   const userEmail = slackUserInfo.profile.email;
   const appliedPractices = await getAppliedPractices(userEmail);
@@ -82,27 +87,24 @@ module.exports = async (slackUserID, token) => {
     project,
     practices,
     startDate = oneYearAgo,
-    endDate = tomorrow
+    endDate = today
   ) {
     const completedPractices = practices.filter(practice => {
       return (
         practice.fields.PROJECT_NAME == project &&
         practice.fields.Status == "Completed" &&
-        moment(practice.fields.Date).isBetween(startDate, endDate)
+        moment(practice.fields.Date).isBetween(startDate, endDate, "day", "[)")
       );
     });
 
     const totalPractices = practices.filter(practice => {
       return (
         practice.fields.PROJECT_NAME == project &&
-        moment(practice.fields.Date).isBetween(startDate, endDate)
+        moment(practice.fields.Date).isBetween(startDate, endDate, "day", "[)")
       );
     });
-
     return completedPractices.length / totalPractices.length;
   }
-
-  console.log(calcPerformanceStats("MYOB", allPractices));
 
   const pendingPractices = allPractices.filter(
     practice => practice.fields.Status == "Pending"
@@ -123,15 +125,34 @@ module.exports = async (slackUserID, token) => {
     //define good/bad practice brackets here use a case statement probably
 
     const formatNumberToPercentageString = number => {
-      number.toLocaleString(undefined, {
-        style: "percent"
-      });
+      //if number return as percentage, otherwise return as N/A
+      if (isNaN(number)) {
+        return "N/A";
+      } else {
+        return number.toLocaleString(undefined, {
+          style: "percent"
+        });
+      }
     };
 
     const overallPeformanceScore = calcPerformanceStats(
       record.fields.Name,
       allPractices
     );
+
+    const currentWeeksPerformanceScore = calcPerformanceStats(
+      record.fields.Name,
+      allPractices,
+      startOfWeek
+    );
+    const previousWeeksPerformanceScore = calcPerformanceStats(
+      record.fields.Name,
+      allPractices,
+      startOfPreviousWeek,
+      endOfPreviousWeek
+    );
+
+    console.log(previousWeeksPerformanceScore);
 
     const performanceLevel = mapPercentageToPerformanceLevel(
       overallPeformanceScore
@@ -147,7 +168,20 @@ module.exports = async (slackUserID, token) => {
       percentage: formatNumberToPercentageString(overallPeformanceScore),
       performanceLevel: performanceLevel,
       performanceIcon: performanceIcon,
-      lastWeeksPerformanceLevel: dfd
+      currentWeekPeformance: {
+        performance: formatNumberToPercentageString(
+          currentWeeksPerformanceScore
+        ),
+        weekStartDate: startOfWeek,
+        weekEndDate: endOfWeek
+      },
+      previousWeekPeformance: {
+        performance: formatNumberToPercentageString(
+          previousWeeksPerformanceScore
+        ),
+        weekStartDate: startOfPreviousWeek,
+        weekEndDate: endOfPreviousWeek
+      }
     };
   });
 
