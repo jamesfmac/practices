@@ -1,22 +1,24 @@
-const {URL_ROOT} = require("../../config")
-module.exports = (
+const { URL_ROOT } = require("../../config");
+const moment = require("moment-timezone");
+module.exports = async(
   slackUserID,
   appliedPracticesGroupedByProject,
   projects,
   pendingPractices
 ) => {
+
   const heading = [
     {
       type: "section",
       text: {
         type: "mrkdwn",
-        text: "*Dashboard*"
+        text: "*Playbook Scorecard*"
       },
       accessory: {
         type: "button",
         text: {
           type: "plain_text",
-          text: "Message Settings",
+          text: "Settings",
           emoji: true
         },
         action_id: "showAppSettingsModal"
@@ -124,21 +126,33 @@ module.exports = (
         type: "section",
         text: {
           type: "mrkdwn",
-          text: `${project.name}`
+          text: `*${project.name}*`
         }
       },
       {
         type: "context",
         elements: [
           {
-            type: "image",
-            image_url:
-              `${URL_ROOT}/public/${project.performanceIcon}`,
-            alt_text: "Location Pin Icon"
-          },
+            type: "mrkdwn",
+            text: `*${project.percentage} Total Score* _(${project.performanceLevel})_`
+          }
+        ]
+      },
+      {
+        type: "context",
+        elements: [
           {
             type: "mrkdwn",
-            text: `${project.performanceLevel} (${project.percentage})`
+            text: `${project.currentWeekPeformance.weekStartDate.format('Do MMM')} - Today:  ${project.currentWeekPeformance.performance}`
+          }
+        ]
+      },
+      {
+        type: "context",
+        elements: [
+          {
+            type: "mrkdwn",
+            text: `${project.previousWeekPeformance.weekStartDate.format('Do MMM')} - ${project.previousWeekPeformance.weekEndDate.format('Do MMM')}:  ${project.previousWeekPeformance.performance}`
           }
         ]
       }
@@ -150,7 +164,7 @@ module.exports = (
       type: "section",
       text: {
         type: "mrkdwn",
-        text: "*Project Settings*"
+        text: "*Active Projects*"
       }
     },
     {
@@ -182,21 +196,15 @@ module.exports = (
         elements: practicesContextArray
       }
     ];
-
-    const divider = [
-      {
-        type: "divider"
-      }
-    ];
-
+    
     return [...projectTitle].concat(...activePractices);
   });
 
   const combinedBlocks = []
     .concat(...heading)
     .concat(...projectStats)
-    .concat(...actions)
     .concat(...overduePracticesNoticeSM)
+    .concat(...actions)
     .concat(...activeProjectsHeading)
     .concat(...activeProjects);
 
