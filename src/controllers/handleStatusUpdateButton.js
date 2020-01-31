@@ -44,7 +44,7 @@ module.exports = async ({ ack, body, context, payload }) => {
         }
       });
 
-      //fetch the update task list from airtable
+      //fetch the updated task list from airtable
       const arrOfRecordIds = private_metadata.split(",").map(id => {
         return `RECORD_ID = "${id}"`;
       });
