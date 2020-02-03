@@ -29,23 +29,23 @@ module.exports = async () => {
           isForModal: false
         });
 
-        const chatPostResult = await chatPostDM(
-          dailyPlan.userEmail,
-          dailyPlan.view.text,
-          dailyPlan.view.blocks
-        );
+        if (dailyPlan.practices.length > 0) {
+          const chatPostResult = await chatPostDM(
+            dailyPlan.userEmail,
+            dailyPlan.view.text,
+            dailyPlan.view.blocks
+          );
 
-        chatPostResult.ok
-          ? analytics.track({
-            userId: slackUserID,
-            event: `Message Recieved`,
-            properties: {
-              message: 'Daily Plan'
-            }
-          })
-          : null;
-
-    
+          chatPostResult.ok
+            ? analytics.track({
+                userId: slackUserID,
+                event: `Message Recieved`,
+                properties: {
+                  message: "Daily Plan"
+                }
+              })
+            : null;
+        }
       }
     }
   } catch (error) {
