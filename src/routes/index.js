@@ -15,7 +15,8 @@ const {
   showWeeklyPlanModal,
   showAppSettingsModal,
   submitAppSettingsModal,
-  showDailyPlanModal
+  showDailyPlanModal,
+  showProjectSettingsModal
 } = require("../controllers");
 const { authUser } = require("../methods");
 
@@ -57,4 +58,6 @@ module.exports = function(app) {
   app.view("submitAppSettingsModal", submitAppSettingsModal);
 
   app.action("openTodaysPractices", authUser, showDailyPlanModal);
+
+  app.action("showProjectSettingsModal",authUser, showProjectSettingsModal)
 };

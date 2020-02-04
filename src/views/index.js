@@ -8,6 +8,7 @@ module.exports = {
   home: require("./home"),
   appSettingsModal: require("./appSettingsModal"),
   dailyPlan: require("./dailyPlan"),
-  overduePracticesReminder: require("./overduePracticesReminder")
+  overduePracticesReminder: require("./overduePracticesReminder"),
+  projectSettingsModal: require("./projectSettingsModal")
 
 };
