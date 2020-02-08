@@ -134,7 +134,7 @@ module.exports = async (
         elements: [
           {
             type: "mrkdwn",
-            text: `*${project.percentage} Total Score* _(${project.performanceLevel})_`
+            text: `*Total Score ${project.percentage}* _(${project.performanceLevel})_`
           }
         ]
       },

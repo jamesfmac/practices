@@ -1,13 +1,17 @@
 const { AIRTABLE_BASE_ID } = require("../../../config");
 const base = require("airtable").base(AIRTABLE_BASE_ID);
 
-module.exports = async email => {
+module.exports = async (email, project) => {
   try {
     const emailFilter = email
       ? `{TEAM_LEAD_EMAIL}="${email}"`
       : `{TEAM_LEAD_EMAIL}!=""`;
 
-    const combinedFilter = `AND({Practice Active?}="Active" , ${emailFilter})`;
+    const projectFilter = project
+      ? `{PROJECT_NAME}="${project}"`
+      : `{PROJECT_NAME}!=""`;
+
+    const combinedFilter = `AND({Practice Active?}="Active" , ${emailFilter}, ${projectFilter})`;
 
 
 

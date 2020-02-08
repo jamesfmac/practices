@@ -18,5 +18,6 @@ module.exports = {
   generateDailyPlan: require("./generateDailyPlan"),
   showDailyPlanModal: require("./showDailyPlanModal"),
   generateOverdueReminder: require("./generateOverdueReminder"),
-  showProjectSettingsModal: require("./showProjectSettingsModal")
+  showProjectSettingsModal: require("./showProjectSettingsModal"),
+  submitProjectSettingsModal: require("./submitProjectSettingsModal")
 };
