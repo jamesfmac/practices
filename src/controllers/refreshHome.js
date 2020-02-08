@@ -152,8 +152,6 @@ module.exports = async (slackUserID, token) => {
       endOfPreviousWeek
     );
 
-    console.log(previousWeeksPerformanceScore);
-
     const performanceLevel = mapPercentageToPerformanceLevel(
       overallPeformanceScore
     );
@@ -162,6 +160,7 @@ module.exports = async (slackUserID, token) => {
     return {
       id: record.id,
       name: record.fields.Name,
+      playbook: record.fields.PLAYBOOK,
       completed: record.fields.COMPLETED,
       overdue: record.fields.OVERDUE,
       missed: record.fields.MISSED,
