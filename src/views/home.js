@@ -1,6 +1,6 @@
 const { URL_ROOT } = require("../../config");
 const moment = require("moment-timezone");
-module.exports = async(
+module.exports = async (
   slackUserID,
   appliedPracticesGroupedByProject,
   projects,
@@ -134,7 +134,7 @@ module.exports = async(
         elements: [
           {
             type: "mrkdwn",
-            text: `*${project.percentage} Total Score* _(${project.performanceLevel})_`
+            text: `*Total Score ${project.percentage}* _(${project.performanceLevel})_`
           }
         ]
       },
@@ -143,7 +143,9 @@ module.exports = async(
         elements: [
           {
             type: "mrkdwn",
-            text: `${project.currentWeekPeformance.weekStartDate.format('Do MMM')} - Today:  ${project.currentWeekPeformance.performance}`
+            text: `${project.currentWeekPeformance.weekStartDate.format(
+              "Do MMM"
+            )} - Today:  ${project.currentWeekPeformance.performance}`
           }
         ]
       },
@@ -152,7 +154,11 @@ module.exports = async(
         elements: [
           {
             type: "mrkdwn",
-            text: `${project.previousWeekPeformance.weekStartDate.format('Do MMM')} - ${project.previousWeekPeformance.weekEndDate.format('Do MMM')}:  ${project.previousWeekPeformance.performance}`
+            text: `${project.previousWeekPeformance.weekStartDate.format(
+              "Do MMM"
+            )} - ${project.previousWeekPeformance.weekEndDate.format(
+              "Do MMM"
+            )}:  ${project.previousWeekPeformance.performance}`
           }
         ]
       }
@@ -179,6 +185,16 @@ module.exports = async(
         text: {
           type: "mrkdwn",
           text: `${project.project}`
+        },
+        accessory: {
+          type: "button",
+          text: {
+            type: "plain_text",
+            text: "Edit Project",
+            emoji: true
+          },
+          action_id: "showProjectSettingsModal",
+          value: `${project.project}`
         }
       }
     ];
@@ -196,7 +212,6 @@ module.exports = async(
         elements: practicesContextArray
       }
     ];
-    
     return [...projectTitle].concat(...activePractices);
   });
 
