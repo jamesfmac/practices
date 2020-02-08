@@ -126,15 +126,16 @@ module.exports = async (
         type: "section",
         text: {
           type: "mrkdwn",
-          text: `*${project.name}*`
+          text: `*${project.name}*\n\`${project.playbook}\``
         }
       },
+      
       {
         type: "context",
         elements: [
           {
             type: "mrkdwn",
-            text: `*Total Score ${project.percentage}* _(${project.performanceLevel})_`
+            text: `- *Total Score ${project.percentage}* _(${project.performanceLevel})_`
           }
         ]
       },
@@ -143,7 +144,7 @@ module.exports = async (
         elements: [
           {
             type: "mrkdwn",
-            text: `${project.currentWeekPeformance.weekStartDate.format(
+            text: `- ${project.currentWeekPeformance.weekStartDate.format(
               "Do MMM"
             )} - Today:  ${project.currentWeekPeformance.performance}`
           }
@@ -154,7 +155,7 @@ module.exports = async (
         elements: [
           {
             type: "mrkdwn",
-            text: `${project.previousWeekPeformance.weekStartDate.format(
+            text: `- ${project.previousWeekPeformance.weekStartDate.format(
               "Do MMM"
             )} - ${project.previousWeekPeformance.weekEndDate.format(
               "Do MMM"
