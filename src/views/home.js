@@ -4,15 +4,30 @@ module.exports = async (
   slackUserID,
   appliedPracticesGroupedByProject,
   projects,
-  pendingPractices
+  pendingPractices,
+  selectedTab
 ) => {
+
+
+  const pageHeading = ()=>{
+    if(selectedTab == "projects"){
+
+      return '*Projects*'
+    }
+    else {
+      return `*Project Scorecard*`
+    }
+
+  }
+
+
 
   const heading = [
     {
       type: "section",
       text: {
         type: "mrkdwn",
-        text: "*Playbook Scorecard*"
+        text: pageHeading()
       },
       accessory: {
         type: "button",
@@ -23,22 +38,12 @@ module.exports = async (
         },
         action_id: "showAppSettingsModal"
       }
-    },
-    {
-      type: "divider"
     }
   ];
 
-  const overduePracticesNoticeLG =
+  const overduePracticesNoticeSM =
     pendingPractices.length > 0
       ? [
-          {
-            type: "section",
-            text: {
-              type: "mrkdwn",
-              text: `>:rotating_light: <@${slackUserID}> you have *${pendingPractices.length}* pending practices`
-            }
-          },
           {
             type: "actions",
             elements: [
@@ -46,27 +51,12 @@ module.exports = async (
                 type: "button",
                 text: {
                   type: "plain_text",
-                  text: "Update Practices",
+                  text: `:bangbang: ${pendingPractices.length} overdue plays`,
                   emoji: true
                 },
 
                 action_id: "open_practices_log",
                 style: "primary"
-              }
-            ]
-          }
-        ]
-      : [];
-
-  const overduePracticesNoticeSM =
-    pendingPractices.length > 0
-      ? [
-          {
-            type: "context",
-            elements: [
-              {
-                type: "mrkdwn",
-                text: `:exclamation: *${pendingPractices.length} practices overdue*`
               }
             ]
           }
@@ -81,42 +71,35 @@ module.exports = async (
           type: "button",
           text: {
             type: "plain_text",
-            text: "Update Practices",
+            text: "Scorecard",
             emoji: true
           },
 
-          action_id: "open_practices_log",
-          style: "primary"
+          action_id: "showScorecardTab"
         },
         {
           type: "button",
           text: {
             type: "plain_text",
-            text: "Show Week",
+            text: "Projects",
             emoji: true
           },
-          action_id: "openWeekyPLan"
+          value: 'projects',
+          action_id: "showProjectsTab"
         },
         {
           type: "button",
           text: {
             type: "plain_text",
-            text: "Todays Practices",
+            text: "Schedule",
             emoji: true
           },
           action_id: "openTodaysPractices"
-        },
-        {
-          type: "button",
-          text: {
-            type: "plain_text",
-            text: ":postbox: Feedback",
-            emoji: true
-          },
-          action_id: "open_feedback_form",
-          value: "feedback"
         }
       ]
+    },
+    {
+      type: "divider"
     }
   ];
 
@@ -126,16 +109,25 @@ module.exports = async (
         type: "section",
         text: {
           type: "mrkdwn",
-          text: `*${project.name}*\n\`${project.playbook}\``
+          text: `*${project.name}*`
         }
       },
-      
       {
         type: "context",
         elements: [
           {
             type: "mrkdwn",
-            text: `- *Total Score ${project.percentage}* _(${project.performanceLevel})_`
+            text: `*Playbook:* ${project.playbook}`
+          }
+        ]
+      },
+
+      {
+        type: "context",
+        elements: [
+          {
+            type: "mrkdwn",
+            text: `*Total Score:* ${project.percentage} (${project.performanceLevel})`
           }
         ]
       },
@@ -144,7 +136,7 @@ module.exports = async (
         elements: [
           {
             type: "mrkdwn",
-            text: `- ${project.currentWeekPeformance.weekStartDate.format(
+            text: `>${project.currentWeekPeformance.weekStartDate.format(
               "Do MMM"
             )} - Today:  ${project.currentWeekPeformance.performance}`
           }
@@ -155,7 +147,7 @@ module.exports = async (
         elements: [
           {
             type: "mrkdwn",
-            text: `- ${project.previousWeekPeformance.weekStartDate.format(
+            text: `> ${project.previousWeekPeformance.weekStartDate.format(
               "Do MMM"
             )} - ${project.previousWeekPeformance.weekEndDate.format(
               "Do MMM"
@@ -171,7 +163,7 @@ module.exports = async (
       type: "section",
       text: {
         type: "mrkdwn",
-        text: "*Active Projects*"
+        text: "*Active*"
       }
     },
     {
@@ -216,13 +208,21 @@ module.exports = async (
     return [...projectTitle].concat(...activePractices);
   });
 
-  const combinedBlocks = []
-    .concat(...heading)
-    .concat(...projectStats)
-    .concat(...overduePracticesNoticeSM)
-    .concat(...actions)
-    .concat(...activeProjectsHeading)
-    .concat(...activeProjects);
-
-  return { blocks: combinedBlocks };
+  if ((selectedTab == "projects")) {
+    return {
+      blocks: []
+        .concat(...actions)
+        .concat(...heading)
+        .concat(...activeProjectsHeading)
+        .concat(...activeProjects)
+    };
+  } else {
+    return {
+      blocks: []
+        .concat(...actions)
+        .concat(...heading)
+        .concat(...overduePracticesNoticeSM)
+        .concat(...projectStats)
+    };
+  }
 };

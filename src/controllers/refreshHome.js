@@ -9,7 +9,7 @@ const {
   getPracticesLog
 } = require("../APIs/airtable");
 
-module.exports = async (slackUserID, token) => {
+module.exports = async (slackUserID, token, selectedTab) => {
   //helper functions
   const groupPracticesByField = (array, field) => {
     const uniqueValuesInField = array
@@ -193,12 +193,14 @@ module.exports = async (slackUserID, token) => {
     slackUserID,
     appliedPracticesGroupedByProject,
     formattedProjects,
-    pendingPractices
+    pendingPractices,
+    selectedTab
   );
 
   viewsPublish({
     token: token,
     user_id: slackUserID,
-    blocks: view.blocks
+    blocks: view.blocks,
+    
   });
 };

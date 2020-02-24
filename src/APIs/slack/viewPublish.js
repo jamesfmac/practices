@@ -8,7 +8,7 @@ module.exports = view => {
       view: { type: "home", blocks: view.blocks }
     })
     .catch(error => {
-      console.log("views.publish", error);
+      console.log("views.publish", error.data);
       return error;
     });
 };
