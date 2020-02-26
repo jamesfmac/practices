@@ -13,11 +13,12 @@ const {
   handleStatusUpdateButton,
   appHomeOpened,
   showWeeklyPlanModal,
-  showAppSettingsModal,
   submitAppSettingsModal,
   showDailyPlanModal,
   showProjectSettingsModal,
-  submitProjectSettingsModal
+  submitProjectSettingsModal,
+  handleHomeTabSwitch,
+  handleHomeOverflow,
 } = require("../controllers");
 const { authUser } = require("../methods");
 
@@ -54,13 +55,17 @@ module.exports = function(app) {
 
   app.action("openWeekyPLan", showWeeklyPlanModal);
 
-  app.action("showAppSettingsModal", authUser, showAppSettingsModal);
-
   app.view("submitAppSettingsModal", submitAppSettingsModal);
 
   app.action("openTodaysPractices", authUser, showDailyPlanModal);
 
-  app.action("showProjectSettingsModal",authUser, showProjectSettingsModal)
+  app.action("showProjectSettingsModal", authUser, showProjectSettingsModal);
 
-  app.view("submitProjectSettingsModal", submitProjectSettingsModal)
+  app.view("submitProjectSettingsModal", submitProjectSettingsModal);
+
+  app.action("showProjectsTab", handleHomeTabSwitch);
+
+  app.action("showScorecardTab", handleHomeTabSwitch);
+  
+  app.action("handleHomeOverflow", authUser,  handleHomeOverflow)
 };

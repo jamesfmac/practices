@@ -13,7 +13,7 @@ module.exports = async context => {
     }
   });
 
-  if (context.payload.tab == "home") {
+
     refreshHome(slackUserID, token);
-  }
+
 };
