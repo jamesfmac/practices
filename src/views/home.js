@@ -78,7 +78,7 @@ module.exports = async (
         },
         {
           type: "overflow",
-          action_id: "showAppSettingsModal",
+          action_id: "handleHomeOverflow",
           options: [
             {
               text: {
@@ -87,6 +87,14 @@ module.exports = async (
                 emoji: true
               },
               value: "settings"
+            },
+            {
+              text: {
+                type: "plain_text",
+                text: "Submit feedback",
+                emoji: true
+              },
+              value: "feedback"
             }
           ]
         }

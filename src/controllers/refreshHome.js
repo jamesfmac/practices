@@ -74,14 +74,16 @@ module.exports = async (slackUserID, token, selectedTab) => {
 
   const slackUserInfo = await usersInfo(slackUserID);
   const userEmail = slackUserInfo.profile.email;
-  const appliedPractices = await getAppliedPractices(userEmail);
-  const projects = await getProjects(userEmail);
 
-  const allPractices = await getPracticesLog({
-    email: userEmail,
-    afterDate: oneYearAgo,
-    beforeDate: tomorrow
-  });
+  [appliedPractices, projects, allPractices] = await Promise.all([
+    getAppliedPractices(userEmail),
+    getProjects(userEmail),
+    getPracticesLog({
+      email: userEmail,
+      afterDate: oneYearAgo,
+      beforeDate: tomorrow
+    })
+  ]);
 
   function calcPerformanceStats(
     project,
@@ -200,7 +202,6 @@ module.exports = async (slackUserID, token, selectedTab) => {
   viewsPublish({
     token: token,
     user_id: slackUserID,
-    blocks: view.blocks,
-    
+    blocks: view.blocks
   });
 };

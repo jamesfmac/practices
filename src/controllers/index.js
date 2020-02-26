@@ -20,5 +20,6 @@ module.exports = {
   generateOverdueReminder: require("./generateOverdueReminder"),
   showProjectSettingsModal: require("./showProjectSettingsModal"),
   submitProjectSettingsModal: require("./submitProjectSettingsModal"),
-  handleHomeTabSwitch: require("./handleHomeTabSwitch")
+  handleHomeTabSwitch: require("./handleHomeTabSwitch"),
+  handleHomeOverflow: require("./handleHomeOverflow")
 };
