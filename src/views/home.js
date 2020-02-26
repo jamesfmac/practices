@@ -7,20 +7,13 @@ module.exports = async (
   pendingPractices,
   selectedTab
 ) => {
-
-
-  const pageHeading = ()=>{
-    if(selectedTab == "projects"){
-
-      return '*Projects*'
+  const pageHeading = () => {
+    if (selectedTab == "projects") {
+      return "*Projects*";
+    } else {
+      return `*Project Scorecard*`;
     }
-    else {
-      return `*Project Scorecard*`
-    }
-
-  }
-
-
+  };
 
   const heading = [
     {
@@ -28,15 +21,6 @@ module.exports = async (
       text: {
         type: "mrkdwn",
         text: pageHeading()
-      },
-      accessory: {
-        type: "button",
-        text: {
-          type: "plain_text",
-          text: "Settings",
-          emoji: true
-        },
-        action_id: "showAppSettingsModal"
       }
     }
   ];
@@ -74,8 +58,12 @@ module.exports = async (
             text: "Scorecard",
             emoji: true
           },
-
-          action_id: "showScorecardTab"
+          value: "scorecard",
+          action_id: "showScorecardTab",
+          style:
+            selectedTab == "projects" || selectedTab == "schedule"
+              ? undefined
+              : "primary"
         },
         {
           type: "button",
@@ -84,17 +72,23 @@ module.exports = async (
             text: "Projects",
             emoji: true
           },
-          value: 'projects',
-          action_id: "showProjectsTab"
+          value: "projects",
+          action_id: "showProjectsTab",
+          style: selectedTab == "projects" ? "primary" : undefined
         },
         {
-          type: "button",
-          text: {
-            type: "plain_text",
-            text: "Schedule",
-            emoji: true
-          },
-          action_id: "openTodaysPractices"
+          type: "overflow",
+          action_id: "showAppSettingsModal",
+          options: [
+            {
+              text: {
+                type: "plain_text",
+                text: "Reminder Settings",
+                emoji: true
+              },
+              value: "settings"
+            }
+          ]
         }
       ]
     },
@@ -208,7 +202,7 @@ module.exports = async (
     return [...projectTitle].concat(...activePractices);
   });
 
-  if ((selectedTab == "projects")) {
+  if (selectedTab == "projects") {
     return {
       blocks: []
         .concat(...actions)
