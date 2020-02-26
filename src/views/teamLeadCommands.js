@@ -22,20 +22,10 @@ module.exports = async body => {
           type: "button",
           text: {
             type: "plain_text",
-            text: "Show Week",
+            text: "View Week",
             emoji: true
           },
           action_id: "openWeekyPLan"
-        },
-        {
-          type: "button",
-          text: {
-            type: "plain_text",
-            text: ":postbox: Feedback",
-            emoji: true
-          },
-          action_id: "open_feedback_form",
-          value: "feedback"
         }
       ]
     }

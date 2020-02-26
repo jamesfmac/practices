@@ -1,7 +1,7 @@
 const { feedbackModal } = require("../views");
 const { viewsOpen } = require("../APIs/slack");
 const analytics = require("../APIs/segment")
-module.exports = async ({ body, context, say, payload, ack, event }) => {
+module.exports = async ({ body, context,ack }) => {
   ack();
 
   try {

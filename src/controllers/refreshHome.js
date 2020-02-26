@@ -9,7 +9,7 @@ const {
   getPracticesLog
 } = require("../APIs/airtable");
 
-module.exports = async (slackUserID, token) => {
+module.exports = async (slackUserID, token, selectedTab) => {
   //helper functions
   const groupPracticesByField = (array, field) => {
     const uniqueValuesInField = array
@@ -74,14 +74,16 @@ module.exports = async (slackUserID, token) => {
 
   const slackUserInfo = await usersInfo(slackUserID);
   const userEmail = slackUserInfo.profile.email;
-  const appliedPractices = await getAppliedPractices(userEmail);
-  const projects = await getProjects(userEmail);
 
-  const allPractices = await getPracticesLog({
-    email: userEmail,
-    afterDate: oneYearAgo,
-    beforeDate: tomorrow
-  });
+  [appliedPractices, projects, allPractices] = await Promise.all([
+    getAppliedPractices(userEmail),
+    getProjects(userEmail),
+    getPracticesLog({
+      email: userEmail,
+      afterDate: oneYearAgo,
+      beforeDate: tomorrow
+    })
+  ]);
 
   function calcPerformanceStats(
     project,
@@ -193,7 +195,8 @@ module.exports = async (slackUserID, token) => {
     slackUserID,
     appliedPracticesGroupedByProject,
     formattedProjects,
-    pendingPractices
+    pendingPractices,
+    selectedTab
   );
 
   viewsPublish({
